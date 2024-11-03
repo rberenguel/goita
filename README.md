@@ -37,7 +37,7 @@ For all these, creation and deletion (click the element and press backspace) sho
 - [x] Rectangles: press `r` and drag to create.
 - [x] Arrows: press `a` and drag to create from source to destination.
 - [x] Text: press `t` and click to place.
-- [x] Highlight: press `h` and drag to create. Use color `x` to redact.
+- [x] Highlight: press `s` and drag to create. Use color `x` to redact. (why `s` and not `h`? Because all other shape/tool letters are on the left hand)
 - [x] Redact: Use highlighting with color redact.
 - [ ] Circles/ellipses
 - [ ] Some visual hint of the current mode.

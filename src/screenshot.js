@@ -1,8 +1,8 @@
 const colors = {
-  red: (a) => `rgba(255, 0, 0, ${a})`,
-  yellow: (a) => `rgba(255, 255, 0, ${a})`,
-  blue: (a) => `rgba(0, 0, 255, ${a})`,
-  green: (a) => `rgba(0, 255, 0, ${a})`,
+  red: (a) => `rgba(220, 20, 20, ${a})`,
+  yellow: (a) => `rgba(220, 220, 10, ${a})`,
+  blue: (a) => `rgba(20, 20, 200, ${a})`,
+  green: (a) => `rgba(20, 200, 20, ${a})`,
   redact: (a) => `rgba(0, 0, 0, 1.0)`,
 };
 
@@ -32,7 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
       );
       filter.setAttribute("id", "drop-shadow");
       filter.innerHTML = `
-        <feDropShadow dx="3" dy="3" stdDeviation="3" flood-color="red" flood-opacity="0.5" />
+        <feDropShadow dx="3" dy="3" stdDeviation="3" flood-color="rgba(50, 50, 50, 0.7)" />
+        <feDropShadow dx="-3" dy="-3" stdDeviation="3" flood-color="rgba(200, 200, 200, 0.7)" />
       `;
       svg.appendChild(filter);
       const defs = document.createElementNS(
@@ -50,7 +51,9 @@ document.addEventListener("DOMContentLoaded", () => {
         marker.setAttribute("refX", "0"); // Increased refX to position arrowhead further ahead
         marker.setAttribute("refY", "2");
         marker.setAttribute("orient", "auto");
-        marker.innerHTML = `<polygon points="0 0, 5 2, 0 4" fill="${colors[color](1)}" />`; // Set fill
+        marker.innerHTML = `<polygon points="0 0, 5 2, 0 4" fill="${colors[
+          color
+        ](1)}" />`; // Set fill
         defs.appendChild(marker);
       };
 
@@ -148,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
       kind = "rect";
     }
 
-    if (event.key === "h") {
+    if (event.key === "s") {
       console.log("drawing");
       isDrawing = true;
       kind = "highlight";
@@ -269,6 +272,13 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
     }
+    activeTextEditor = null;
+    kind = null;
+    const elementsWithFilter = document.querySelectorAll("[filter]"); // Select all elements with a filter attribute
+
+    elementsWithFilter.forEach((element) => {
+      element.removeAttribute("filter");
+    });
     if (event.target.tagName === "rect") {
       kind = "rect";
       selected = event.target;
@@ -315,11 +325,6 @@ document.addEventListener("DOMContentLoaded", () => {
       event.stopPropagation();
       event.preventDefault();
       return;
-    }
-    activeTextEditor = null;
-    kind = null;
-    if (selected) {
-      selected.removeAttribute("filter");
     }
   });
 
