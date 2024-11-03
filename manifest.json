@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "Goita",
+  "description": "Take a screenshot and add arrows and sh*t",
+  "version": "0.1",
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "activeTab",
+    "storage",
+    "scripting",
+    "clipboardWrite"
+  ],
+  "action": {
+    "default_popup": "src/popup.html",
+    "min_width": 300,
+    "max_width": 500
+  },
+  "background": {
+    "service_worker": "src/background.js",
+    "type": "module"
+  },
+  "commands": {
+    "take-screenshot": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+P",
+        "mac": "MacCtrl+Command+P"
+      },
+      "description": "Take a screenshot of the current page"
+    }
+  },
+  "icons": {
+    "512": "media/icon512.png",
+    "128": "media/icon128.png",
+    "48": "media/icon48.png"
+  }
+}
