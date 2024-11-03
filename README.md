@@ -17,7 +17,7 @@ Yes, but this is mine.
 
 Also, two features I have wanted for a while:
 
-1. Adds (visible, draggable) the URL the screenshot has been taken from.
+1. Adds (visible, draggable) the URL the screenshot has been taken from. On a Mac, that is enough to go back to the source.
 
 ![](media/goita.jpg)
 
