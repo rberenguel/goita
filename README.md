@@ -39,6 +39,7 @@ For all these, creation and deletion (click the element and press backspace) sho
 - [x] Text: press `t` and click to place.
 - [x] Highlight: press `s` and drag to create. Use color `x` to redact. (why `s` and not `h`? Because all other shape/tool letters are on the left hand)
 - [x] Redact: Use highlighting with color redact.
+- [ ] Crop-on-drag the initial screenshot (this might be tricky if not impossible by how I create it).
 - [ ] Circles/ellipses
 - [ ] Some visual hint of the current mode.
 
