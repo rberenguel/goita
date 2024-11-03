@@ -1,3 +1,11 @@
+const colors = {
+  red: (a) => `rgba(255, 0, 0, ${a})`,
+  yellow: (a) => `rgba(255, 255, 0, ${a})`,
+  blue: (a) => `rgba(0, 0, 255, ${a})`,
+  green: (a) => `rgba(0, 255, 0, ${a})`,
+  redact: (a) => `rgba(0, 0, 0, 1.0)`,
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   chrome.storage.local.set({ linkback: true });
   chrome.storage.local.get(["screenshot", "url"], function (result) {
@@ -31,19 +39,25 @@ document.addEventListener("DOMContentLoaded", () => {
         "http://www.w3.org/2000/svg",
         "defs",
       );
-      const marker = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "marker",
-      );
-      marker.setAttribute("id", "arrowhead");
+      const createMarker = (color) => {
+        const marker = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "marker",
+        );
+        marker.setAttribute("id", "arrowhead-" + color);
+        marker.setAttribute("markerWidth", "10");
+        marker.setAttribute("markerHeight", "7");
+        marker.setAttribute("refX", "0"); // Increased refX to position arrowhead further ahead
+        marker.setAttribute("refY", "2");
+        marker.setAttribute("orient", "auto");
+        marker.innerHTML = `<polygon points="0 0, 5 2, 0 4" fill="${colors[color](1)}" />`; // Set fill
+        defs.appendChild(marker);
+      };
 
-      marker.setAttribute("markerWidth", "10");
-      marker.setAttribute("markerHeight", "7");
-      marker.setAttribute("refX", "0"); // Increased refX to position arrowhead further ahead
-      marker.setAttribute("refY", "2");
-      marker.setAttribute("orient", "auto");
-      marker.innerHTML = '<polygon points="0 0, 5 2, 0 4" fill="red" />'; // Set fill to red
-      defs.appendChild(marker);
+      for (let color in colors) {
+        createMarker(color);
+      }
+
       svg.appendChild(defs);
       svg.addEventListener("textInput", (event) => {
         console.log(event);
@@ -57,6 +71,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const svg = document.getElementById("svgOverlay");
   const img = document.getElementById("screenshotImg");
   let isDrawing = false;
+
+  let colorName = "red";
+  let color = colors[colorName];
   let startX, startY;
   let rect;
   let arrow;
@@ -70,6 +87,16 @@ document.addEventListener("DOMContentLoaded", () => {
       // Deselect anything Escape
       selected.removeAttribute("filter");
       selected = null;
+    }
+    if (event.key === "c") {
+      // Set up colors
+      if (kind === "colorSettings") {
+        kind = null;
+      } else {
+        kind = "colorSettings";
+      }
+
+      return;
     }
     if (event.key === "Escape" && isDrawing) {
       if (rect) {
@@ -92,10 +119,39 @@ document.addEventListener("DOMContentLoaded", () => {
       event.stopPropagation();
       return;
     }
+    if (kind === "colorSettings") {
+      if (event.key === "r") {
+        colorName = "red";
+        color = colors["red"];
+      }
+      if (event.key === "y") {
+        colorName = "yellow";
+        color = colors["yellow"];
+      }
+      if (event.key === "b") {
+        colorName = "blue";
+        color = colors["blue"];
+      }
+      if (event.key === "g") {
+        colorName = "green";
+        color = colors["green"];
+      }
+      if (event.key === "x") {
+        colorName = "redact";
+        color = colors["redact"];
+      }
+      kind = null;
+    }
     if (event.key === "r") {
       console.log("drawing");
       isDrawing = true;
       kind = "rect";
+    }
+
+    if (event.key === "h") {
+      console.log("drawing");
+      isDrawing = true;
+      kind = "highlight";
     }
     if (event.key === "a") {
       isDrawing = true;
@@ -125,18 +181,23 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     if (isDrawing) {
-      if (kind === "rect") {
+      if (kind === "rect" || kind === "highlight") {
         event.preventDefault();
         startX = event.offsetX;
         startY = event.offsetY;
         rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
         rect.setAttribute("x", startX);
         rect.setAttribute("y", startY);
-        rect.setAttribute("fill", "none");
-        rect.setAttribute("stroke", "red");
-        rect.setAttribute("stroke-width", "5");
-        rect.setAttribute("rx", "5");
-        rect.setAttribute("fill", "rgba(0, 0, 0, 0.0)"); // This is to make it easier to select
+        if (kind === "rect") {
+          rect.setAttribute("stroke", color(1));
+          rect.setAttribute("stroke-width", "5");
+          rect.setAttribute("fill", "rgba(0, 0, 0, 0.0)"); // This is to make it easier to select
+          rect.setAttribute("rx", "5");
+        }
+        if (kind === "highlight") {
+          rect.setAttribute("stroke-width", "0");
+          rect.setAttribute("fill", color(0.2));
+        }
         svg.appendChild(rect);
         event.preventDefault();
         return;
@@ -149,9 +210,9 @@ document.addEventListener("DOMContentLoaded", () => {
         arrow.setAttribute("y1", startY);
         arrow.setAttribute("x2", startX);
         arrow.setAttribute("y2", startY);
-        arrow.setAttribute("stroke", "red");
+        arrow.setAttribute("stroke", color(1));
         arrow.setAttribute("stroke-width", "5");
-        arrow.setAttribute("marker-end", "url(#arrowhead)");
+        arrow.setAttribute("marker-end", `url(#arrowhead-${colorName})`);
         svg.appendChild(arrow);
         event.preventDefault();
         return;
@@ -167,6 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const textEditor = document.createElement("div");
         textEditor.classList.add("text-editor");
+        textEditor.style.color = color(1);
         textEditor.contentEditable = true;
         textEditorWrapper.appendChild(textEditor);
 

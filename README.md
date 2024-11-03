@@ -27,12 +27,20 @@ Also, two features I have wanted for a while:
 
 For all these, creation and deletion (click the element and press backspace) should be possible.
 
-- [x] Rectangles (press `r` and drag to create)
-- [x] Arrows (press `a` and drag to create from source to destination)
-- [x] Text (press `t` and click to place)
-- [ ] Highlight
-- [ ] Redact
+- [x] Choose color: press `c` and then one of:
+  - `r`: Red (this is the default).
+  - `y`: Yellow.
+  - `b`: Blue.
+  - `g`: Green.
+  - `x`: Redact (will use solid black in everything).
+  - `c`: To cancel the choose color mode.
+- [x] Rectangles: press `r` and drag to create.
+- [x] Arrows: press `a` and drag to create from source to destination.
+- [x] Text: press `t` and click to place.
+- [x] Highlight: press `h` and drag to create. Use color `x` to redact.
+- [x] Redact: Use highlighting with color redact.
 - [ ] Circles/ellipses
+- [ ] Some visual hint of the current mode.
 
 I think there is an interaction mode I forgot to set up.
 
