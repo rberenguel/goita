@@ -36,6 +36,10 @@ For all these, creation and deletion (click the element and press backspace) sho
 
 I think there is an interaction mode I forgot to set up.
 
+## Installation
+
+Download/clone this repository somewhere and load the extension in Chrome via `Extensions -> Load unpacked`. I only could get it to fully work once I enabled "enable in Incognito". If you don't feel like doing that, that's okay. I wrote this for my own use anyway…
+
 ## Credits
 
 - Icon: Gemini via Imagen 3.
