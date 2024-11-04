@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Goita",
-  "description": "Take a screenshot and add arrows and sh*t",
-  "version": "0.1",
+  "description": "Take a screenshot, add arrows and sh*t",
+  "version": "0.2",
   "permissions": [
     "tabs",
     "activeTab",

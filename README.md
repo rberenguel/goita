@@ -32,6 +32,7 @@ For all these, creation and deletion (click the element and press backspace) sho
   - `y`: Yellow.
   - `b`: Blue.
   - `g`: Green.
+  - `w`: White.
   - `x`: Redact (will use solid black in everything).
   - `c`: To cancel the choose color mode.
 - [x] Rectangles: press `r` and drag to create.
@@ -39,7 +40,13 @@ For all these, creation and deletion (click the element and press backspace) sho
 - [x] Text: press `t` and click to place.
 - [x] Highlight: press `s` and drag to create. Use color `x` to redact. (why `s` and not `h`? Because all other shape/tool letters are on the left hand)
 - [x] Redact: Use highlighting with color redact.
-- [ ] Crop-on-drag the initial screenshot (this might be tricky if not impossible by how I create it).
+- [x] Clip-on-drag the initial screenshot: press `k` at any time.
+  - The resulting clip is draggable after clicking on it to select it.
+  - Dragging outside of the clip moves the clipping frame (but the coordinates are currently somewhat off).
+  - Select the clipped image and press `k` again to restore the viewframe.
+- [x] Paste images from the clipboard: press `i` and then click somewhere.
+  - The pasted image is draggable.
+  - The pasted image can be deleted by pressing backspace (like any other element after selection).
 - [ ] Circles/ellipses
 - [ ] Some visual hint of the current mode.
 

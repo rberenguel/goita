@@ -175,9 +175,13 @@ document.addEventListener("DOMContentLoaded", () => {
       kind = "rect";
     }
     if (event.key === "k") {
-      console.log("clipping");
-      isDrawing = true;
-      kind = "clipping";
+      if (selected && kind === "clipping") {
+        svgImage.removeAttribute("clip-path");
+        clipPathRect = null;
+      } else {
+        isDrawing = true;
+        kind = "clipping";
+      }
     }
     if (event.key === "s") {
       console.log("drawing");
@@ -306,6 +310,7 @@ document.addEventListener("DOMContentLoaded", () => {
         svg.appendChild(clipPath);
 
         // Apply the clipPath to the image
+        // TODO Might want multiple clip paths, one per pasted image at some point
         svgImage.setAttribute("clip-path", "url(#image-clip)");
         return;
       }
@@ -548,7 +553,8 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       return;
     }
-    if (dragging && kind === "image") {
+    if (dragging && kind === "image" && clipPathRect) {
+      // If there is no clipping mask, don't move the image. This could get confusing though.
       requestAnimationFrame(() => {
         // Calculate new translate values relative to the parent SVG element
         const newX =
