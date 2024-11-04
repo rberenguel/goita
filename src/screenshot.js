@@ -4,7 +4,14 @@ const colors = {
   blue: (a) => `rgba(20, 20, 200, ${a})`,
   green: (a) => `rgba(20, 200, 20, ${a})`,
   redact: (a) => `rgba(0, 0, 0, 1.0)`,
+  white: (a) => `rgba(250, 250, 250, ${a})`,
 };
+
+const svg = document.getElementById("svgOverlay");
+const svgImage = document.createElementNS(
+  "http://www.w3.org/2000/svg",
+  "image",
+);
 
 document.addEventListener("DOMContentLoaded", () => {
   chrome.storage.local.set({ linkback: true });
@@ -22,7 +29,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Set SVG viewport after image loads
     img.onload = function () {
-      const svg = document.getElementById("svgOverlay");
+      svgImage.setAttributeNS(
+        "http://www.w3.org/1999/xlink",
+        "href",
+        result.screenshot,
+      );
+      svgImage.setAttribute("width", img.width);
+      svgImage.setAttribute("height", img.height);
+      svg.appendChild(svgImage);
+
+      // Remove the original img element
+      img.parentNode.removeChild(img);
       svg.setAttribute("viewBox", `0 0 ${img.width} ${img.height}`);
       svg.setAttribute("width", img.width);
       svg.setAttribute("height", img.height);
@@ -77,9 +94,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let colorName = "red";
   let color = colors[colorName];
+  // the useful globals
   let startX, startY;
   let rect;
   let arrow;
+  let shadowRect;
+  let clipPathRect;
   let kind = null;
   let selected = null;
   let dragging = false;
@@ -143,6 +163,10 @@ document.addEventListener("DOMContentLoaded", () => {
         colorName = "redact";
         color = colors["redact"];
       }
+      if (event.key === "w") {
+        colorName = "white";
+        color = colors["white"];
+      }
       kind = null;
     }
     if (event.key === "r") {
@@ -150,7 +174,11 @@ document.addEventListener("DOMContentLoaded", () => {
       isDrawing = true;
       kind = "rect";
     }
-
+    if (event.key === "k") {
+      console.log("clipping");
+      isDrawing = true;
+      kind = "clipping";
+    }
     if (event.key === "s") {
       console.log("drawing");
       isDrawing = true;
@@ -159,6 +187,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (event.key === "a") {
       isDrawing = true;
       kind = "arrow";
+    }
+    if (event.key === "i") {
+      kind = "paste";
+      isDrawing = true;
+      event.stopPropagation();
     }
     if (event.key === "t") {
       isDrawing = true;
@@ -183,7 +216,53 @@ document.addEventListener("DOMContentLoaded", () => {
     if (event.button != 0) {
       return;
     }
+    console.log(event);
     if (isDrawing) {
+      if (kind === "paste") {
+        // Get image data from clipboard
+        navigator.clipboard.read().then((clipboardItems) => {
+          for (const clipboardItem of clipboardItems) {
+            for (const type of clipboardItem.types) {
+              if (type === "image/png") {
+                clipboardItem.getType(type).then((blob) => {
+                  const reader = new FileReader();
+                  reader.onload = (e) => {
+                    const pastedImageDataUrl = e.target.result;
+
+                    // Create an SVG image element
+                    const pastedImage = document.createElementNS(
+                      "http://www.w3.org/2000/svg",
+                      "image",
+                    );
+                    pastedImage.setAttributeNS(
+                      "http://www.w3.org/1999/xlink",
+                      "href",
+                      pastedImageDataUrl,
+                    );
+                    pastedImage.setAttribute("x", event.offsetX);
+                    pastedImage.setAttribute("y", event.offsetY);
+                    svg.appendChild(pastedImage);
+                    pastedImage.onload = () => {
+                      const imageWidth = pastedImage.width.baseVal.value;
+                      const imageHeight = pastedImage.height.baseVal.value;
+
+                      // Calculate centered coordinates
+                      const x = event.offsetX - imageWidth / 2;
+                      const y = event.offsetY - imageHeight / 2;
+
+                      // Set the centered position
+                      pastedImage.setAttribute("x", x);
+                      pastedImage.setAttribute("y", y);
+                    };
+                  };
+                  reader.readAsDataURL(blob);
+                });
+                break;
+              }
+            }
+          }
+        });
+      }
       if (kind === "rect" || kind === "highlight") {
         event.preventDefault();
         startX = event.offsetX;
@@ -203,6 +282,31 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         svg.appendChild(rect);
         event.preventDefault();
+        return;
+      }
+      if (kind === "clipping") {
+        startX = event.offsetX;
+        startY = event.offsetY;
+
+        // Create the clipPath element
+        const clipPath = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "clipPath",
+        );
+        clipPath.setAttribute("id", "image-clip");
+
+        // Create the rect element within the clipPath
+        rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("x", startX);
+        rect.setAttribute("y", startY);
+        rect.setAttribute("width", 0); // Initially zero width
+        rect.setAttribute("height", 0); // Initially zero height
+
+        clipPath.appendChild(rect);
+        svg.appendChild(clipPath);
+
+        // Apply the clipPath to the image
+        svgImage.setAttribute("clip-path", "url(#image-clip)");
         return;
       }
       if (kind === "arrow") {
@@ -289,6 +393,82 @@ document.addEventListener("DOMContentLoaded", () => {
       event.preventDefault();
       return;
     }
+    if (event.target.tagName === "image") {
+      kind = "image";
+      selected = event.target;
+      dragging = true;
+      const rect = selected.getBoundingClientRect();
+      offsetX = event.clientX - rect.left - startX;
+      offsetY = event.clientY - rect.top - startY;
+      console.log(offsetX, offsetY);
+      const clipPathUrl = selected.getAttribute("clip-path");
+      if (clipPathUrl) {
+        // If it has a clip-path, store the clipPath's rect element
+        const clipPathId = clipPathUrl.substring(5, clipPathUrl.length - 1);
+        const clipPath = document.getElementById(clipPathId);
+        clipPathRect = clipPath.querySelector("rect");
+        startX = parseFloat(clipPathRect.getAttribute("x"));
+        startY = parseFloat(clipPathRect.getAttribute("y"));
+        const clipPathRectBounds = clipPathRect.getBoundingClientRect();
+        //offsetX = event.clientX;
+        //offsetY = event.clientY;//event.offsetY - startY;
+        //
+      }
+      /*
+      // Add shadow?
+
+      const clipPathUrl = selected.getAttribute("clip-path");
+      // It is a clipped image
+      if (clipPathUrl) {
+        // Get the clipPath element
+        const clipPathId = clipPathUrl.substring(5, clipPathUrl.length - 1); // Extract ID from url(#id)
+        const clipPath = document.getElementById(clipPathId);
+
+        // Get the rect element within the clipPath
+        const clipPathRect = clipPath.querySelector("rect");
+        if (clipPathRect) {
+          // Create a new rect element for the shadow
+          shadowRect = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "rect"
+          );
+          shadowRect.setAttribute("x", clipPathRect.getAttribute("x"));
+          shadowRect.setAttribute("y", clipPathRect.getAttribute("y"));
+          shadowRect.setAttribute("width", clipPathRect.getAttribute("width"));
+          shadowRect.setAttribute(
+            "height",
+            clipPathRect.getAttribute("height")
+          );
+          shadowRect.setAttribute("filter", "url(#drop-shadow)");
+          //TODO(me) Remove the drop shadow
+          // Insert the shadow rect before the image element
+          svg.insertBefore(shadowRect, selected);
+        }
+      }
+        */
+      // Get initial translate values (if any)
+      const transform = selected.getAttribute("transform");
+      if (transform) {
+        const translateMatch = transform.match(/translate\(([^,]+),([^)]+)\)/);
+        if (translateMatch) {
+          startX = parseFloat(translateMatch[1]);
+          startY = parseFloat(translateMatch[2]);
+        } else {
+          startX = 0;
+          startY = 0;
+        }
+      } else {
+        startX = 0;
+        startY = 0;
+      }
+      console.log(startX);
+      console.log(startY);
+      offsetX = event.clientX - svg.getBoundingClientRect().left - startX;
+      offsetY = event.clientY - svg.getBoundingClientRect().top - startY;
+
+      event.preventDefault();
+      return;
+    }
     if (event.target.tagName === "line") {
       kind = "line";
       selected = event.target;
@@ -300,6 +480,12 @@ document.addEventListener("DOMContentLoaded", () => {
       arrowEndOffsetY = event.clientY - selected.y2.baseVal.value;
       selected.setAttribute("filter", "url(#drop-shadow)");
       event.preventDefault();
+      return;
+    }
+    if (event.target.tagName === "svg") {
+      // If we have selected an image _and_ there is a clipping rect
+      kind = "svg";
+      dragging = true;
       return;
     }
     if (event.target.classList.contains("text-editor-wrapper")) {
@@ -348,6 +534,30 @@ document.addEventListener("DOMContentLoaded", () => {
       event.stopPropagation();
       return;
     }
+    if (dragging && kind === "svg" && clipPathRect) {
+      requestAnimationFrame(() => {
+        const deltaX = event.clientX - startX;
+        const deltaY = event.clientY - startY;
+
+        // Apply the delta to the initial position of the clipPathRect
+        const newX = svg.getBoundingClientRect().left + deltaX;
+        const newY = svg.getBoundingClientRect().top + deltaY;
+        console.log(newX, newY);
+        clipPathRect.setAttribute("x", newX);
+        clipPathRect.setAttribute("y", newY);
+      });
+      return;
+    }
+    if (dragging && kind === "image") {
+      requestAnimationFrame(() => {
+        // Calculate new translate values relative to the parent SVG element
+        const newX =
+          event.clientX - svg.getBoundingClientRect().left - offsetX + startX;
+        const newY =
+          event.clientY - svg.getBoundingClientRect().top - offsetY + startY;
+        selected.setAttribute("transform", `translate(${newX}, ${newY})`);
+      });
+    }
     if (dragging && kind === "source") {
       const newX = event.clientX - offsetX;
       const newY = event.clientY - offsetY;
@@ -371,6 +581,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       return;
     }
+
     if (isDrawing && arrow) {
       arrow.setAttribute("x2", event.clientX);
       arrow.setAttribute("y2", event.clientY);
