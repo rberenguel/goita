@@ -34,12 +34,12 @@ For all these, creation and deletion (click the element and press backspace) sho
   - `g`: Green.
   - `w`: White.
   - `x`: Redact (will use solid black in everything).
-  - `c`: To cancel the choose color mode.
+  - `c`: To cancel the "choose color" mode.
 - [x] Rectangles: press `r` and drag to create.
 - [x] Arrows: press `a` and drag to create from source to destination.
 - [x] Text: press `t` and click to place.
 - [x] Highlight: press `s` and drag to create. Use color `x` to redact. (why `s` and not `h`? Because all other shape/tool letters are on the left hand)
-- [x] Redact: Use highlighting with color redact.
+- [x] Redact: Use highlighting with color "redact".
 - [x] Clip-on-drag the initial screenshot: press `k` at any time.
   - The resulting clip is draggable after clicking on it to select it.
   - Dragging outside of the clip moves the clipping frame (but the coordinates are currently somewhat off).
@@ -50,7 +50,7 @@ For all these, creation and deletion (click the element and press backspace) sho
 - [ ] Circles/ellipses
 - [ ] Some visual hint of the current mode.
 
-I think there is an interaction mode I forgot to set up.
+I think there is an interaction mode I forgot to set up/clear up. More later.
 
 ## Installation
 

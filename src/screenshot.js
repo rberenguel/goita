@@ -1,11 +1,8 @@
-const colors = {
-  red: (a) => `rgba(220, 20, 20, ${a})`,
-  yellow: (a) => `rgba(220, 220, 10, ${a})`,
-  blue: (a) => `rgba(20, 20, 200, ${a})`,
-  green: (a) => `rgba(20, 200, 20, ${a})`,
-  redact: (a) => `rgba(0, 0, 0, 1.0)`,
-  white: (a) => `rgba(250, 250, 250, ${a})`,
-};
+import { colors } from "./common.js";
+
+import { Arrow } from "./arrow.js";
+
+let elements = {};
 
 const svg = document.getElementById("svgOverlay");
 const svgImage = document.createElementNS(
@@ -34,9 +31,9 @@ document.addEventListener("DOMContentLoaded", () => {
         "href",
         result.screenshot,
       );
-      const dpi = window.devicePixelRatio
-      svgImage.setAttribute("width", img.width/dpi);
-      svgImage.setAttribute("height", img.height/dpi);
+      const dpi = window.devicePixelRatio;
+      svgImage.setAttribute("width", img.width / dpi);
+      svgImage.setAttribute("height", img.height / dpi);
       svg.appendChild(svgImage);
 
       // Remove the original img element
@@ -95,11 +92,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let colorName = "red";
   let color = colors[colorName];
-  // the useful globals
+  // the useful globals, but most will go away;
   let startX, startY;
   let rect;
   let arrow;
-  let shadowRect;
+  let activeTextEditor;
+  let offsetX, offsetY;
+  let textEditor;
+  let textEditorOffsetX, textEditorOffsetY;
   let clipPathRect;
   let kind = null;
   let selected = null;
@@ -109,7 +109,12 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("event");
     if (event.key === "Escape" && selected) {
       // Deselect anything Escape
-      selected.removeAttribute("filter");
+      if (selected.is) {
+        // Arrow might destroy itself but would still exist as an element. But never selectable.
+        selected.deselect();
+      } else {
+        selected.removeAttribute("filter");
+      }
       selected = null;
     }
     if (event.key === "c") {
@@ -119,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         kind = "colorSettings";
       }
-
+      selected = null;
       return;
     }
     if (event.key === "Escape" && isDrawing) {
@@ -212,7 +217,13 @@ document.addEventListener("DOMContentLoaded", () => {
       if (selected.id === "sourceLink") {
         chrome.storage.local.set({ linkback: false });
       }
-      selected.parentElement.removeChild(selected);
+      if (selected.is) {
+        delete elements[selected.id];
+        selected.delete();
+      } else {
+        selected.parentElement.removeChild(selected);
+      }
+
       selected = null;
     }
   });
@@ -222,6 +233,9 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     console.log(event);
+    Array.from(document.querySelectorAll(".text-editor")).map((t) => {
+      t.blur();
+    });
     if (isDrawing) {
       if (kind === "paste") {
         // Get image data from clipboard
@@ -318,16 +332,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (kind === "arrow") {
         startX = event.clientX;
         startY = event.clientY;
-        arrow = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        arrow.setAttribute("x1", startX);
-        arrow.setAttribute("y1", startY);
-        arrow.setAttribute("x2", startX);
-        arrow.setAttribute("y2", startY);
-        arrow.setAttribute("stroke", color(1));
-        arrow.setAttribute("stroke-width", "5");
-        arrow.setAttribute("marker-end", `url(#arrowhead-${colorName})`);
-        svg.appendChild(arrow);
+        arrow = new Arrow(startX, startY, colorName, svg);
+        elements[arrow.id] = arrow;
         event.preventDefault();
+        selected = arrow;
         return;
       }
       if (kind === "text") {
@@ -420,7 +428,7 @@ document.addEventListener("DOMContentLoaded", () => {
         //offsetY = event.clientY;//event.offsetY - startY;
         //
       }
-      
+
       /*
       // Add shadow?
 
@@ -476,15 +484,23 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     if (event.target.tagName === "line") {
+      // TODO(me) This eventually needs to use thingy.select
       kind = "line";
       selected = event.target;
-      console.log(selected);
       dragging = true;
-      arrowStartOffsetX = event.clientX - selected.x1.baseVal.value;
-      arrowStartOffsetY = event.clientY - selected.y1.baseVal.value;
-      arrowEndOffsetX = event.clientX - selected.x2.baseVal.value;
-      arrowEndOffsetY = event.clientY - selected.y2.baseVal.value;
-      selected.setAttribute("filter", "url(#drop-shadow)");
+      // TODO(me) This should be a generic dispatcher eventually, tied with the elements themselves.
+      if (selected.getAttribute("_kind") === "arrow") {
+        selected = elements[selected.getAttribute("id")];
+        selected.select();
+        selected.dragInit(event.clientX, event.clientY);
+        console.log("Ref: Selected an arrow");
+      } else {
+        arrowStartOffsetX = event.clientX - selected.x1.baseVal.value;
+        arrowStartOffsetY = event.clientY - selected.y1.baseVal.value;
+        arrowEndOffsetX = event.clientX - selected.x2.baseVal.value;
+        arrowEndOffsetY = event.clientY - selected.y2.baseVal.value;
+        selected.setAttribute("filter", "url(#drop-shadow)");
+      }
       event.preventDefault();
       return;
     }
@@ -555,7 +571,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     if (dragging && kind === "image") {
-      console.log("dragging image")
+      console.log("dragging image");
       requestAnimationFrame(() => {
         // Calculate new translate values relative to the parent SVG element
         const newX =
@@ -589,9 +605,9 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if (isDrawing && arrow) {
-      arrow.setAttribute("x2", event.clientX);
-      arrow.setAttribute("y2", event.clientY);
+    if (isDrawing && kind === "arrow" && selected && selected.is) {
+      // This should be generic regardless of whether it is an arrow or not
+      selected.updatePosition(event.clientX, event.clientY);
     }
     if (selected && dragging) {
       if (kind === "rect") {
@@ -602,14 +618,20 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       if (kind === "line") {
-        const newStartX = event.clientX - arrowStartOffsetX;
-        const newStartY = event.clientY - arrowStartOffsetY;
-        const newEndX = event.clientX - arrowEndOffsetX;
-        const newEndY = event.clientY - arrowEndOffsetY;
-        selected.setAttribute("x1", newStartX);
-        selected.setAttribute("y1", newStartY);
-        selected.setAttribute("x2", newEndX);
-        selected.setAttribute("y2", newEndY);
+        if (selected.is && selected.is("arrow")) {
+          console.info("Ref: Dragging arrow");
+          selected.drag(event.clientX, event.clientY);
+        } else {
+          const newStartX = event.clientX - arrowStartOffsetX;
+          const newStartY = event.clientY - arrowStartOffsetY;
+          const newEndX = event.clientX - arrowEndOffsetX;
+          const newEndY = event.clientY - arrowEndOffsetY;
+          selected.setAttribute("x1", newStartX);
+          selected.setAttribute("y1", newStartY);
+          selected.setAttribute("x2", newEndX);
+          selected.setAttribute("y2", newEndY);
+        }
+
         return;
       }
     }
@@ -620,7 +642,12 @@ document.addEventListener("DOMContentLoaded", () => {
       isDrawing = false;
       rect = null;
       arrow = null;
+      if (selected.is) {
+        console.log("deselecting");
+        selected.deselect();
+      }
     }
+
     dragging = false;
   });
 });
