@@ -44,7 +44,7 @@ For all these, creation and deletion (click the element and press backspace) sho
   - The resulting clip is draggable after clicking on it to select it.
   - Dragging outside of the clip moves the clipping frame (but the coordinates are currently somewhat off).
   - Select the clipped image and press `k` again to restore the viewframe.
-- [x] Paste images from the clipboard: press `i` and then click somewhere.
+- [x] Paste images from the clipboard: press `v` and then click somewhere.
   - The pasted image is draggable.
   - The pasted image can be deleted by pressing backspace (like any other element after selection).
 - [ ] Circles/ellipses

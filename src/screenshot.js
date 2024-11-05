@@ -34,8 +34,9 @@ document.addEventListener("DOMContentLoaded", () => {
         "href",
         result.screenshot,
       );
-      svgImage.setAttribute("width", img.width);
-      svgImage.setAttribute("height", img.height);
+      const dpi = window.devicePixelRatio
+      svgImage.setAttribute("width", img.width/dpi);
+      svgImage.setAttribute("height", img.height/dpi);
       svg.appendChild(svgImage);
 
       // Remove the original img element
@@ -192,7 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
       isDrawing = true;
       kind = "arrow";
     }
-    if (event.key === "i") {
+    if (event.key === "v") {
       kind = "paste";
       isDrawing = true;
       event.stopPropagation();
@@ -419,6 +420,7 @@ document.addEventListener("DOMContentLoaded", () => {
         //offsetY = event.clientY;//event.offsetY - startY;
         //
       }
+      
       /*
       // Add shadow?
 
@@ -466,8 +468,7 @@ document.addEventListener("DOMContentLoaded", () => {
         startX = 0;
         startY = 0;
       }
-      console.log(startX);
-      console.log(startY);
+
       offsetX = event.clientX - svg.getBoundingClientRect().left - startX;
       offsetY = event.clientY - svg.getBoundingClientRect().top - startY;
 
@@ -553,8 +554,8 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       return;
     }
-    if (dragging && kind === "image" && clipPathRect) {
-      // If there is no clipping mask, don't move the image. This could get confusing though.
+    if (dragging && kind === "image") {
+      console.log("dragging image")
       requestAnimationFrame(() => {
         // Calculate new translate values relative to the parent SVG element
         const newX =

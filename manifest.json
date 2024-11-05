@@ -31,7 +31,6 @@
   },
   "icons": {
     "512": "media/icon512.png",
-    "128": "media/icon128.png",
-    "48": "media/icon48.png"
+    "128": "media/icon128.png"
   }
 }
