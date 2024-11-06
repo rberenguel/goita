@@ -12,13 +12,14 @@ class Arrow {
     this.svg = svg;
     this.element = this.createArrowElement();
     this.isSelected = false;
+    this.kind = "arrow";
     this.id = `arrow-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
     this.element.setAttribute("id", this.id);
     this.element.setAttribute("_kind", "arrow");
   }
 
   is(kind) {
-    return kind === "arrow";
+    return kind === this.kind;
   }
 
   createArrowElement() {
@@ -36,10 +37,9 @@ class Arrow {
     this.svg.appendChild(arrow);
     return arrow;
   }
-
-  updatePosition(x2, y2) {
-    this.x2 = x2;
-    this.y2 = y2;
+  updateShape(event) {
+    this.x2 = event.clientX;
+    this.y2 = event.clientY;
     requestAnimationFrame(() => {
       this.element.setAttribute("x2", this.x2);
       this.element.setAttribute("y2", this.y2);
@@ -66,12 +66,12 @@ class Arrow {
     console.table({ eofx: this.endOffsetX, eofy: this.endOffsetY });
   }
 
-  drag(clientX, clientY) {
+  drag(event) {
     // Calculate new positions for start and end points
-    const newStartX = clientX - this.startOffsetX;
-    const newStartY = clientY - this.startOffsetY;
-    const newEndX = clientX - this.endOffsetX;
-    const newEndY = clientY - this.endOffsetY;
+    const newStartX = event.clientX - this.startOffsetX;
+    const newStartY = event.clientY - this.startOffsetY;
+    const newEndX = event.clientX - this.endOffsetX;
+    const newEndY = event.clientY - this.endOffsetY;
 
     // Update the arrow's position
     requestAnimationFrame(() => {

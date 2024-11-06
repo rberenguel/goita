@@ -1,9 +1,13 @@
 import { colors } from "./common.js";
 
 import { Arrow } from "./arrow.js";
+import { Rect } from "./rect.js";
+import { Text } from "./text.js";
+import { Image } from "./image.js";
+import { ClipPath } from "./clip.js";
 
 let elements = {};
-
+let kind = null;
 const svg = document.getElementById("svgOverlay");
 const svgImage = document.createElementNS(
   "http://www.w3.org/2000/svg",
@@ -101,7 +105,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let textEditor;
   let textEditorOffsetX, textEditorOffsetY;
   let clipPathRect;
-  let kind = null;
   let selected = null;
   let dragging = false;
 
@@ -143,7 +146,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (event.key === "Escape" && kind === "text") {
       return;
     }
-    if (kind === "text") {
+    console.log(
+      kind,
+      selected.is && selected.is("text"),
+      selected.is && selected.is("text") && selected.focused(),
+    );
+    if (kind === "text" && selected.is("text") && selected.focused()) {
       console.log("texting");
       event.stopPropagation();
       return;
@@ -181,16 +189,20 @@ document.addEventListener("DOMContentLoaded", () => {
       kind = "rect";
     }
     if (event.key === "k") {
-      if (selected && kind === "clipping") {
-        svgImage.removeAttribute("clip-path");
-        clipPathRect = null;
-      } else {
-        isDrawing = true;
-        kind = "clipping";
+      const clipPathUrl = svgImage.getAttribute("clip-path");
+      if (clipPathUrl) {
+        const id = clipPathUrl.substring(5, clipPathUrl.length - 1);
+        elements[id].delete();
+        selected = null;
+        kind = null;
+        return;
       }
+
+      isDrawing = true;
+      kind = "clipping";
     }
     if (event.key === "s") {
-      console.log("drawing");
+      console.log("drawing highlight");
       isDrawing = true;
       kind = "highlight";
     }
@@ -232,6 +244,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (event.button != 0) {
       return;
     }
+    console.log(selected);
+    console.log(selected && selected.is);
+    if (selected && selected.is) {
+      selected.deselect();
+    }
     console.log(event);
     Array.from(document.querySelectorAll(".text-editor")).map((t) => {
       t.blur();
@@ -247,32 +264,15 @@ document.addEventListener("DOMContentLoaded", () => {
                   const reader = new FileReader();
                   reader.onload = (e) => {
                     const pastedImageDataUrl = e.target.result;
-
-                    // Create an SVG image element
-                    const pastedImage = document.createElementNS(
-                      "http://www.w3.org/2000/svg",
-                      "image",
-                    );
-                    pastedImage.setAttributeNS(
-                      "http://www.w3.org/1999/xlink",
-                      "href",
+                    const pastedImage = new Image(
+                      event.offsetX,
+                      event.offsetY,
                       pastedImageDataUrl,
+                      svg,
                     );
-                    pastedImage.setAttribute("x", event.offsetX);
-                    pastedImage.setAttribute("y", event.offsetY);
-                    svg.appendChild(pastedImage);
-                    pastedImage.onload = () => {
-                      const imageWidth = pastedImage.width.baseVal.value;
-                      const imageHeight = pastedImage.height.baseVal.value;
 
-                      // Calculate centered coordinates
-                      const x = event.offsetX - imageWidth / 2;
-                      const y = event.offsetY - imageHeight / 2;
-
-                      // Set the centered position
-                      pastedImage.setAttribute("x", x);
-                      pastedImage.setAttribute("y", y);
-                    };
+                    elements[pastedImage.id] = pastedImage;
+                    selected = pastedImage;
                   };
                   reader.readAsDataURL(blob);
                 });
@@ -283,50 +283,23 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
       if (kind === "rect" || kind === "highlight") {
-        event.preventDefault();
         startX = event.offsetX;
         startY = event.offsetY;
-        rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        rect.setAttribute("x", startX);
-        rect.setAttribute("y", startY);
-        if (kind === "rect") {
-          rect.setAttribute("stroke", color(1));
-          rect.setAttribute("stroke-width", "5");
-          rect.setAttribute("fill", "rgba(0, 0, 0, 0.0)"); // This is to make it easier to select
-          rect.setAttribute("rx", "5");
-        }
-        if (kind === "highlight") {
-          rect.setAttribute("stroke-width", "0");
-          rect.setAttribute("fill", color(0.2));
-        }
-        svg.appendChild(rect);
+        const rect = new Rect(startX, startY, colorName, svg, kind);
+        elements[rect.id] = rect;
+        selected = rect;
         event.preventDefault();
         return;
       }
       if (kind === "clipping") {
         startX = event.offsetX;
         startY = event.offsetY;
-
-        // Create the clipPath element
-        const clipPath = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          "clipPath",
-        );
-        clipPath.setAttribute("id", "image-clip");
-
-        // Create the rect element within the clipPath
-        rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        rect.setAttribute("x", startX);
-        rect.setAttribute("y", startY);
-        rect.setAttribute("width", 0); // Initially zero width
-        rect.setAttribute("height", 0); // Initially zero height
-
-        clipPath.appendChild(rect);
-        svg.appendChild(clipPath);
-
-        // Apply the clipPath to the image
-        // TODO Might want multiple clip paths, one per pasted image at some point
-        svgImage.setAttribute("clip-path", "url(#image-clip)");
+        const newClipPath = new ClipPath(startX, startY, svg, svgImage); // Assuming svgImage is your main image element
+        elements[newClipPath.id] = newClipPath;
+        console.log(newClipPath);
+        console.log(elements);
+        newClipPath.applyToImage();
+        selected = newClipPath;
         return;
       }
       if (kind === "arrow") {
@@ -342,55 +315,23 @@ document.addEventListener("DOMContentLoaded", () => {
         const x = event.offsetX;
         const y = event.offsetY;
 
-        const textEditorWrapper = document.createElement("div");
-        textEditorWrapper.classList.add("text-editor-wrapper");
-        textEditorWrapper.style.left = `calc(${x}px - 2em)`;
-        textEditorWrapper.style.top = `calc(${y}px - 2em)`;
+        const text = new Text(
+          x,
+          y,
+          color,
+          document.getElementById("screenshotContainer"),
+        );
 
-        const textEditor = document.createElement("div");
-        textEditor.classList.add("text-editor");
-        textEditor.style.color = color(1);
-        textEditor.contentEditable = true;
-        textEditorWrapper.appendChild(textEditor);
+        elements[text.id] = text;
+        selected = text;
 
-        document
-          .getElementById("screenshotContainer")
-          .appendChild(textEditorWrapper);
-        textEditor.addEventListener("keydown", (ev) => {
-          if (ev.key === "Escape") {
-            textEditor.blur();
-          }
-        });
-        textEditor.addEventListener("input", () => {
-          textEditor.style.width = "auto";
-          textEditor.style.height = "auto";
-
-          const rect = textEditor.getBoundingClientRect();
-
-          textEditor.style.width = rect.width + "px";
-          textEditor.style.height = rect.height + "px";
-
-          textEditorWrapper.style.width = textEditor.offsetWidth + 20 + "px";
-          textEditorWrapper.style.height = textEditor.offsetHeight + 20 + "px";
-        });
-        textEditor.addEventListener("focus", () => {
-          textEditorWrapper.classList.add("selected");
-        });
-        textEditor.addEventListener("blur", () => {
-          kind = null;
-          textEditorWrapper.classList.remove("selected");
-          if (textEditor.textContent.trim().length === 0) {
-            textEditorWrapper.parentElement.removeChild(textEditorWrapper);
-          }
-        });
-        textEditor.focus();
         isDrawing = false;
         event.stopPropagation();
         event.preventDefault();
+
         return;
       }
     }
-    activeTextEditor = null;
     kind = null;
     const elementsWithFilter = document.querySelectorAll("[filter]"); // Select all elements with a filter attribute
 
@@ -399,86 +340,73 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     if (event.target.tagName === "rect") {
       kind = "rect";
-      selected = event.target;
       dragging = true;
-      offsetX = event.clientX - selected.x.baseVal.value;
-      offsetY = event.clientY - selected.y.baseVal.value;
-      selected.setAttribute("filter", "url(#drop-shadow)");
       event.preventDefault();
+      selected = event.target;
+      const _kind = selected.getAttribute("_kind");
+      if (["rect", "highlight", "clip"].includes(_kind)) {
+        selected = elements[selected.getAttribute("id")];
+        selected.select();
+        selected.dragInit(event.clientX, event.clientY);
+      }
       return;
     }
     if (event.target.tagName === "image") {
       kind = "image";
       selected = event.target;
-      dragging = true;
-      const rect = selected.getBoundingClientRect();
-      offsetX = event.clientX - rect.left - startX;
-      offsetY = event.clientY - rect.top - startY;
-      console.log(offsetX, offsetY);
-      const clipPathUrl = selected.getAttribute("clip-path");
-      if (clipPathUrl) {
-        // If it has a clip-path, store the clipPath's rect element
-        const clipPathId = clipPathUrl.substring(5, clipPathUrl.length - 1);
-        const clipPath = document.getElementById(clipPathId);
-        clipPathRect = clipPath.querySelector("rect");
-        startX = parseFloat(clipPathRect.getAttribute("x"));
-        startY = parseFloat(clipPathRect.getAttribute("y"));
-        const clipPathRectBounds = clipPathRect.getBoundingClientRect();
-        //offsetX = event.clientX;
-        //offsetY = event.clientY;//event.offsetY - startY;
-        //
-      }
-
-      /*
-      // Add shadow?
-
-      const clipPathUrl = selected.getAttribute("clip-path");
-      // It is a clipped image
-      if (clipPathUrl) {
-        // Get the clipPath element
-        const clipPathId = clipPathUrl.substring(5, clipPathUrl.length - 1); // Extract ID from url(#id)
-        const clipPath = document.getElementById(clipPathId);
-
-        // Get the rect element within the clipPath
-        const clipPathRect = clipPath.querySelector("rect");
-        if (clipPathRect) {
-          // Create a new rect element for the shadow
-          shadowRect = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "rect"
-          );
-          shadowRect.setAttribute("x", clipPathRect.getAttribute("x"));
-          shadowRect.setAttribute("y", clipPathRect.getAttribute("y"));
-          shadowRect.setAttribute("width", clipPathRect.getAttribute("width"));
-          shadowRect.setAttribute(
-            "height",
-            clipPathRect.getAttribute("height")
-          );
-          shadowRect.setAttribute("filter", "url(#drop-shadow)");
-          //TODO(me) Remove the drop shadow
-          // Insert the shadow rect before the image element
-          svg.insertBefore(shadowRect, selected);
-        }
-      }
-        */
-      // Get initial translate values (if any)
-      const transform = selected.getAttribute("transform");
-      if (transform) {
-        const translateMatch = transform.match(/translate\(([^,]+),([^)]+)\)/);
-        if (translateMatch) {
-          startX = parseFloat(translateMatch[1]);
-          startY = parseFloat(translateMatch[2]);
-        } else {
-          startX = 0;
-          startY = 0;
-        }
+      if (selected.getAttribute("_kind") === "image") {
+        // This is a pasted image
+        selected = elements[selected.getAttribute("id")];
+        selected.select();
+        selected.dragInit(event.clientX, event.clientY);
+        console.log("Ref: Selected an image");
+        dragging = true;
       } else {
-        startX = 0;
-        startY = 0;
-      }
+        // This is the main image
+        const imageObject = selected;
+        const clipPathUrl = imageObject.getAttribute("clip-path");
 
-      offsetX = event.clientX - svg.getBoundingClientRect().left - startX;
-      offsetY = event.clientY - svg.getBoundingClientRect().top - startY;
+        if (clipPathUrl) {
+          console.log("Has a clip path");
+          const clipPathId = clipPathUrl.substring(5, clipPathUrl.length - 1);
+          const clipPath = document.getElementById(clipPathId);
+          const clipPathRect = clipPath.querySelector("rect");
+
+          // Check if the click is inside the clipPathRect
+          const rectX = parseFloat(clipPathRect.getAttribute("x"));
+          const rectY = parseFloat(clipPathRect.getAttribute("y"));
+          const rectWidth = parseFloat(clipPathRect.getAttribute("width"));
+          const rectHeight = parseFloat(clipPathRect.getAttribute("height"));
+
+          if (
+            event.offsetX >= rectX &&
+            event.offsetX <= rectX + rectWidth &&
+            event.offsetY >= rectY &&
+            event.offsetY <= rectY + rectHeight
+          ) {
+            // Click is inside the clip path
+            selected = elements[clipPathId];
+            selected.select();
+            selected.dragInit(event.clientX, event.clientY);
+            console.log("Ref: Selected a clip path");
+            dragging = true;
+          } else {
+            // Click is outside the clip path, do nothing
+            if (selected && selected.is) {
+              selected.deselect();
+            }
+            selected = null;
+            kind = null;
+          }
+        } else {
+          // No clip path
+          /*selected = imageObject;
+          selected.select();
+          selected.dragInit(event.clientX, event.clientY);
+          console.log("Ref: Selected an image");
+          dragging = true;*/
+        }
+      }
 
       event.preventDefault();
       return;
@@ -494,32 +422,24 @@ document.addEventListener("DOMContentLoaded", () => {
         selected.select();
         selected.dragInit(event.clientX, event.clientY);
         console.log("Ref: Selected an arrow");
-      } else {
-        arrowStartOffsetX = event.clientX - selected.x1.baseVal.value;
-        arrowStartOffsetY = event.clientY - selected.y1.baseVal.value;
-        arrowEndOffsetX = event.clientX - selected.x2.baseVal.value;
-        arrowEndOffsetY = event.clientY - selected.y2.baseVal.value;
-        selected.setAttribute("filter", "url(#drop-shadow)");
       }
       event.preventDefault();
       return;
     }
     if (event.target.tagName === "svg") {
-      // If we have selected an image _and_ there is a clipping rect
+      // If we have selected an image _and_ there is a clipping rect?
       kind = "svg";
       dragging = true;
       return;
     }
-    if (event.target.classList.contains("text-editor-wrapper")) {
+    if (event.target.getAttribute("_kind") === "text") {
+      selected = elements[event.target.getAttribute("id")];
       console.log("wants to drag text");
-      activeTextEditor = event.target;
-      activeTextEditor.classList.add("selected");
-      textEditorOffsetX = event.clientX - activeTextEditor.offsetLeft;
-      textEditorOffsetY = event.clientY - activeTextEditor.offsetTop;
+      selected.select();
+      selected.dragInit(event.clientX, event.clientY);
       dragging = true;
       kind = "text";
       event.stopPropagation();
-      selected = activeTextEditor;
       event.preventDefault();
       return;
     }
@@ -540,22 +460,11 @@ document.addEventListener("DOMContentLoaded", () => {
     dragging = false;
   });
 
-  svg.addEventListener("mousemove", (event) => {
+  document.addEventListener("mousemove", (event) => {
     if (event.button != 0) {
       return;
     }
     event.preventDefault();
-    if (dragging && kind === "text") {
-      const newX = event.clientX - textEditorOffsetX;
-      const newY = event.clientY - textEditorOffsetY;
-      // Use requestAnimationFrame for smoother dragging. It's still jaggy for some reason
-      requestAnimationFrame(() => {
-        activeTextEditor.style.left = `${newX}px`;
-        activeTextEditor.style.top = `${newY}px`;
-      });
-      event.stopPropagation();
-      return;
-    }
     if (dragging && kind === "svg" && clipPathRect) {
       requestAnimationFrame(() => {
         const deltaX = event.clientX - startX;
@@ -571,7 +480,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     if (dragging && kind === "image") {
-      console.log("dragging image");
+      /*console.log("dragging image");
       requestAnimationFrame(() => {
         // Calculate new translate values relative to the parent SVG element
         const newX =
@@ -579,7 +488,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const newY =
           event.clientY - svg.getBoundingClientRect().top - offsetY + startY;
         selected.setAttribute("transform", `translate(${newX}, ${newY})`);
-      });
+      });*/
     }
     if (dragging && kind === "source") {
       const newX = event.clientX - offsetX;
@@ -591,49 +500,19 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       event.stopPropagation();
     }
-    if (isDrawing && rect) {
-      const width = event.offsetX - startX;
-      const height = event.offsetY - startY;
-      rect.setAttribute("width", Math.abs(width));
-      rect.setAttribute("height", Math.abs(height));
-      if (width < 0) {
-        rect.setAttribute("x", event.offsetX);
-      }
-      if (height < 0) {
-        rect.setAttribute("y", event.offsetY);
-      }
+    if (isDrawing && selected && selected.is) {
+      selected.updateShape(event);
       return;
     }
 
     if (isDrawing && kind === "arrow" && selected && selected.is) {
       // This should be generic regardless of whether it is an arrow or not
-      selected.updatePosition(event.clientX, event.clientY);
+      selected.updateShape(event);
     }
-    if (selected && dragging) {
-      if (kind === "rect") {
-        const newX = event.clientX - offsetX;
-        const newY = event.clientY - offsetY;
-        selected.setAttribute("x", newX);
-        selected.setAttribute("y", newY);
-        return;
-      }
-      if (kind === "line") {
-        if (selected.is && selected.is("arrow")) {
-          console.info("Ref: Dragging arrow");
-          selected.drag(event.clientX, event.clientY);
-        } else {
-          const newStartX = event.clientX - arrowStartOffsetX;
-          const newStartY = event.clientY - arrowStartOffsetY;
-          const newEndX = event.clientX - arrowEndOffsetX;
-          const newEndY = event.clientY - arrowEndOffsetY;
-          selected.setAttribute("x1", newStartX);
-          selected.setAttribute("y1", newStartY);
-          selected.setAttribute("x2", newEndX);
-          selected.setAttribute("y2", newEndY);
-        }
-
-        return;
-      }
+    if (selected && dragging && selected.is) {
+      event.stopPropagation();
+      selected.drag(event);
+      return;
     }
   });
 
@@ -645,6 +524,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (selected.is) {
         console.log("deselecting");
         selected.deselect();
+        selected = null;
       }
     }
 
