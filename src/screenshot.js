@@ -109,11 +109,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let dragging = false;
 
   document.addEventListener("keydown", (event) => {
-    console.log("event");
     if (event.key === "Escape" && selected) {
-      // Deselect anything Escape
       if (selected.is) {
-        // Arrow might destroy itself but would still exist as an element. But never selectable.
         selected.deselect();
       } else {
         selected.removeAttribute("filter");
@@ -146,12 +143,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (event.key === "Escape" && kind === "text") {
       return;
     }
-    console.log(
-      kind,
-      selected.is && selected.is("text"),
-      selected.is && selected.is("text") && selected.focused(),
-    );
-    if (kind === "text" && selected.is("text") && selected.focused()) {
+    if (
+      kind === "text" &&
+      selected &&
+      selected.is("text") &&
+      selected.focused()
+    ) {
       console.log("texting");
       event.stopPropagation();
       return;
@@ -192,7 +189,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const clipPathUrl = svgImage.getAttribute("clip-path");
       if (clipPathUrl) {
         const id = clipPathUrl.substring(5, clipPathUrl.length - 1);
-        elements[id].delete();
+        const clip = elements[id];
+        clip.image.setAttribute("x", 0);
+        clip.image.setAttribute("y", 0);
+        clip.delete();
         selected = null;
         kind = null;
         return;
@@ -241,6 +241,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.addEventListener("mousedown", (event) => {
+    // Mousedown takes care of selecting and starting dragging.
+    // First we select anything selectable, and flag it
+    // as dragging started. Dragging is released on
+    // mouseup though, so it behaves as select+drag then.
+    // If we have set up a command that triggers drawing, then we
+    // get into drawing mode and elements are drawn (and implicitly
+    // selected until mouseup).
     if (event.button != 0) {
       return;
     }
@@ -281,10 +288,11 @@ document.addEventListener("DOMContentLoaded", () => {
             }
           }
         });
+        return;
       }
+      startX = event.offsetX;
+      startY = event.offsetY;
       if (kind === "rect" || kind === "highlight") {
-        startX = event.offsetX;
-        startY = event.offsetY;
         const rect = new Rect(startX, startY, colorName, svg, kind);
         elements[rect.id] = rect;
         selected = rect;
@@ -292,9 +300,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       if (kind === "clipping") {
-        startX = event.offsetX;
-        startY = event.offsetY;
-        const newClipPath = new ClipPath(startX, startY, svg, svgImage); // Assuming svgImage is your main image element
+        const newClipPath = new ClipPath(startX, startY, svg, svgImage);
         elements[newClipPath.id] = newClipPath;
         console.log(newClipPath);
         console.log(elements);
@@ -302,56 +308,54 @@ document.addEventListener("DOMContentLoaded", () => {
         selected = newClipPath;
         return;
       }
-      if (kind === "arrow") {
-        startX = event.clientX;
-        startY = event.clientY;
-        arrow = new Arrow(startX, startY, colorName, svg);
-        elements[arrow.id] = arrow;
-        event.preventDefault();
-        selected = arrow;
-        return;
-      }
+      startX = event.clientX;
+      startY = event.clientY;
       if (kind === "text") {
-        const x = event.offsetX;
-        const y = event.offsetY;
-
         const text = new Text(
-          x,
-          y,
+          startX,
+          startY,
           color,
           document.getElementById("screenshotContainer"),
         );
 
         elements[text.id] = text;
         selected = text;
-
-        isDrawing = false;
-        event.stopPropagation();
-        event.preventDefault();
-
         return;
       }
+      if (kind === "arrow") {
+        arrow = new Arrow(startX, startY, colorName, svg);
+        elements[arrow.id] = arrow;
+        event.preventDefault();
+        selected = arrow;
+        return;
+      }
+      isDrawing = false;
+      event.stopPropagation();
+      event.preventDefault();
     }
-    kind = null;
-    const elementsWithFilter = document.querySelectorAll("[filter]"); // Select all elements with a filter attribute
 
-    elementsWithFilter.forEach((element) => {
-      element.removeAttribute("filter");
-    });
+    // Cleanup anything otherwise, since now we are selecting / starting drag
+    selected = null;
+    kind = null;
+    for (let el in elements) {
+      elements[el].deselect();
+    }
     if (event.target.tagName === "rect") {
-      kind = "rect";
       dragging = true;
       event.preventDefault();
       selected = event.target;
       const _kind = selected.getAttribute("_kind");
       if (["rect", "highlight", "clip"].includes(_kind)) {
         selected = elements[selected.getAttribute("id")];
+        kind = selected.kind;
         selected.select();
         selected.dragInit(event.clientX, event.clientY);
       }
       return;
     }
     if (event.target.tagName === "image") {
+      // Image is tricky because depending on whether there is a clipping path or not applied to it
+      // it is handled separately.
       kind = "image";
       selected = event.target;
       if (selected.getAttribute("_kind") === "image") {
@@ -362,7 +366,7 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("Ref: Selected an image");
         dragging = true;
       } else {
-        // This is the main image
+        // This is the main screenshot image. Handling clipping paths is done differently.
         const imageObject = selected;
         const clipPathUrl = imageObject.getAttribute("clip-path");
 
@@ -372,7 +376,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const clipPath = document.getElementById(clipPathId);
           const clipPathRect = clipPath.querySelector("rect");
 
-          // Check if the click is inside the clipPathRect
+          // Check if the click is inside the clipPathRect, this will select it
           const rectX = parseFloat(clipPathRect.getAttribute("x"));
           const rectY = parseFloat(clipPathRect.getAttribute("y"));
           const rectWidth = parseFloat(clipPathRect.getAttribute("width"));
@@ -399,53 +403,24 @@ document.addEventListener("DOMContentLoaded", () => {
             kind = null;
           }
         } else {
-          // No clip path
-          /*selected = imageObject;
-          selected.select();
-          selected.dragInit(event.clientX, event.clientY);
-          console.log("Ref: Selected an image");
-          dragging = true;*/
+          if (selected && selected.is) {
+            selected.deselect();
+          }
+          selected = null;
+          kind = null;
         }
       }
 
       event.preventDefault();
       return;
     }
-    if (event.target.tagName === "line") {
-      // TODO(me) This eventually needs to use thingy.select
-      kind = "line";
-      selected = event.target;
-      dragging = true;
-      // TODO(me) This should be a generic dispatcher eventually, tied with the elements themselves.
-      if (selected.getAttribute("_kind") === "arrow") {
-        selected = elements[selected.getAttribute("id")];
-        selected.select();
-        selected.dragInit(event.clientX, event.clientY);
-        console.log("Ref: Selected an arrow");
-      }
-      event.preventDefault();
-      return;
-    }
-    if (event.target.tagName === "svg") {
-      // If we have selected an image _and_ there is a clipping rect?
-      kind = "svg";
-      dragging = true;
-      return;
-    }
-    if (event.target.getAttribute("_kind") === "text") {
-      selected = elements[event.target.getAttribute("id")];
-      console.log("wants to drag text");
-      selected.select();
-      selected.dragInit(event.clientX, event.clientY);
-      dragging = true;
-      kind = "text";
-      event.stopPropagation();
-      event.preventDefault();
-      return;
-    }
-    if (event.target.id == "sourceLink") {
-      console.log("wants to drag source link");
-      selected = event.target;
+
+    // The source link is handled in isolation
+    if (
+      event.target.id == "sourceLink" ||
+      event.target.parentElement.id == "sourceLink"
+    ) {
+      selected = event.target.closest("#sourceLink");
       offsetX = event.clientX - selected.offsetLeft;
       offsetY = event.clientY - selected.offsetTop;
       dragging = true;
@@ -454,6 +429,23 @@ document.addEventListener("DOMContentLoaded", () => {
       event.preventDefault();
       return;
     }
+
+    const _kind = event.target.getAttribute("_kind");
+    if (!_kind) {
+      console.info("Clicked on something useless unexpectedly");
+      return;
+    }
+    kind = _kind;
+    selected = event.target;
+    dragging = true;
+
+    selected = elements[selected.getAttribute("id")];
+    selected.select();
+    selected.dragInit(event.clientX, event.clientY);
+    console.log(`Ref: Selected an ${kind}`);
+
+    event.preventDefault();
+    event.stopPropagation();
   });
 
   document.addEventListener("mouseup", () => {
@@ -461,11 +453,15 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.addEventListener("mousemove", (event) => {
+    // Mousemove either completes the drawing of the element or drags. This is
+    // controlled via "dragging"
     if (event.button != 0) {
       return;
     }
     event.preventDefault();
+
     if (dragging && kind === "svg" && clipPathRect) {
+      alert("This should not happen");
       requestAnimationFrame(() => {
         const deltaX = event.clientX - startX;
         const deltaY = event.clientY - startY;
@@ -479,24 +475,14 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       return;
     }
-    if (dragging && kind === "image") {
-      /*console.log("dragging image");
-      requestAnimationFrame(() => {
-        // Calculate new translate values relative to the parent SVG element
-        const newX =
-          event.clientX - svg.getBoundingClientRect().left - offsetX + startX;
-        const newY =
-          event.clientY - svg.getBoundingClientRect().top - offsetY + startY;
-        selected.setAttribute("transform", `translate(${newX}, ${newY})`);
-      });*/
-    }
+
     if (dragging && kind === "source") {
-      const newX = event.clientX - offsetX;
-      const newY = event.clientY - offsetY;
-      // Use requestAnimationFrame for smoother dragging. It's still jaggy for some reason
+      const bbox = selected.getBoundingClientRect();
+      const w = bbox.width;
+      const h = bbox.height;
       requestAnimationFrame(() => {
-        selected.style.left = `${newX}px`;
-        selected.style.top = `${newY}px`;
+        selected.style.left = `${event.clientX - w / 2}px`;
+        selected.style.top = `${event.clientY - h / 2}px`;
       });
       event.stopPropagation();
     }

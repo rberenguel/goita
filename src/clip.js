@@ -71,26 +71,13 @@ class ClipPath {
     const rect = this.element.querySelector("rect"); // Get the rect within the clipPath
     this.initialX = parseFloat(rect.getAttribute("x"));
     this.initialY = parseFloat(rect.getAttribute("y"));
-
-    // Calculate offset relative to the clipPathRect's x and y
+    // TODO(me) This is not completely correct. Once we have moved the whole container (in the no-shift
+    // case below), moving it again will be off by the first movement deltas.
     this.offsetX = clientX - this.initialX;
     this.offsetY = clientY - this.initialY;
   }
 
   drag(event) {
-    /*if (this.isSelected) {
-      requestAnimationFrame(() => {
-        const newX = event.clientX - this.offsetX;
-        const newY = event.clientY - this.offsetY;
-        const rect = this.element.querySelector("rect"); // Get the rect within the clipPath
-        rect.setAttribute("x", newX);
-        rect.setAttribute("y", newY);
-        if (this.highlightRect) {
-          this.highlightRect.setAttribute("x", newX);
-          this.highlightRect.setAttribute("y", newY);
-        }
-      });
-    }*/
     if (this.isSelected) {
       requestAnimationFrame(() => {
         if (event.shiftKey) {
@@ -106,16 +93,19 @@ class ClipPath {
           }
         } else {
           // If Shift key is not pressed, delegate dragging to the image
-          console.table(
-            event.clientX,
-            event.clientY,
-            this.offsetX,
-            this.offsetY,
-          );
-          const newX = event.clientX - this.offsetX;
-          const newY = event.clientY - this.offsetY;
+          const rect = this.element.querySelector("rect");
+          const w = rect.getAttribute("width");
+          const h = rect.getAttribute("height");
+          const newX = event.clientX - this.initialX - w / 2;
+          const newY = event.clientY - this.initialY - h / 2;
           this.image.setAttribute("x", newX);
           this.image.setAttribute("y", newY);
+          rect.setAttribute("x", this.initialX + newX);
+          rect.setAttribute("y", this.initialY + newY);
+          if (this.highlightRect) {
+            this.highlightRect.setAttribute("x", this.initialX + newX);
+            this.highlightRect.setAttribute("y", this.initialY + newY);
+          }
         }
       });
     }
@@ -164,6 +154,7 @@ class ClipPath {
   }
 
   delete() {
+    this.deselect(); // To ensure highlights go away
     this.svg.removeChild(this.element);
     this.image.removeAttribute("clip-path"); // Remove the clip-path from the image
   }
