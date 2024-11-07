@@ -4,7 +4,7 @@ import { colors } from "./common.js";
 
 class Arrow {
   constructor(x1, y1, colorName, svg) {
-    this.x1 = x1;
+    this.x1 = x1; // This is kind of useless if we only use them on creation?
     this.y1 = y1;
     this.x2 = x1; // Initially, the arrowhead is at the same point
     this.y2 = y1;
@@ -53,17 +53,23 @@ class Arrow {
   }
 
   dragInit(clientX, clientY) {
-    const startX = this.element.x1.baseVal.value;
-    const startY = this.element.y1.baseVal.value;
-    const endX = this.element.x2.baseVal.value;
-    const endY = this.element.y2.baseVal.value;
+    console.log(this.element);
+    const startX = parseFloat(this.element.getAttribute("x1"));
+    const startY = parseFloat(this.element.getAttribute("y1"));
+    const endX = parseFloat(this.element.getAttribute("x2"));
+    const endY = parseFloat(this.element.getAttribute("y2"));
+    console.log(parseFloat(this.element.getAttribute("x2")));
     console.table({ clientX, clientY, startX, startY, endX, endY });
     this.startOffsetX = clientX - startX;
     this.startOffsetY = clientY - startY;
     this.endOffsetX = clientX - endX;
     this.endOffsetY = clientY - endY;
     console.debug("Ref: started drag on arrow");
-    console.table({ eofx: this.endOffsetX, eofy: this.endOffsetY });
+    console.table({
+      sofx: this.startOffsetX,
+      eofx: this.endOffsetX,
+      eofy: this.endOffsetY,
+    });
   }
 
   drag(event) {
@@ -72,7 +78,9 @@ class Arrow {
     const newStartY = event.clientY - this.startOffsetY;
     const newEndX = event.clientX - this.endOffsetX;
     const newEndY = event.clientY - this.endOffsetY;
-
+    let tofx = this.endOffsetX;
+    let sofx = this.startOffsetX;
+    console.table({ sofx, tofx, newStartX, newStartY, newEndX, newEndY });
     // Update the arrow's position
     requestAnimationFrame(() => {
       this.element.setAttribute("x1", newStartX);
@@ -92,8 +100,10 @@ class Arrow {
     // Arrows of very small length will be autodeleted.
     // Same will happen with any element, to be fair.
     if (this._length() < 10) {
+      console.info("Deleting too-short-of-an-arrow");
       this.delete();
     }
+    this.isSelected = false;
   }
 
   delete() {

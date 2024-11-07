@@ -69,8 +69,11 @@ class ClipPath {
     this.select();
 
     const rect = this.element.querySelector("rect"); // Get the rect within the clipPath
-    this.initialX = parseFloat(rect.getAttribute("x"));
-    this.initialY = parseFloat(rect.getAttribute("y"));
+    const imgx = parseFloat(this.image.getAttribute("x") ?? 0);
+    const imgy = parseFloat(this.image.getAttribute("y") ?? 0);
+    console.log(imgx, imgy);
+    this.initialX = parseFloat(rect.getAttribute("x")) - imgx;
+    this.initialY = parseFloat(rect.getAttribute("y")) - imgy;
     // TODO(me) This is not completely correct. Once we have moved the whole container (in the no-shift
     // case below), moving it again will be off by the first movement deltas.
     this.offsetX = clientX - this.initialX;

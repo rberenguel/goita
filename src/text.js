@@ -30,7 +30,7 @@ class Text {
     textEditorWrapper.appendChild(textEditor);
 
     this.container.appendChild(textEditorWrapper);
-
+    console.log(this.container);
     textEditor.addEventListener("keydown", (ev) => {
       if (ev.key === "Escape") {
         textEditor.blur();
@@ -56,6 +56,7 @@ class Text {
     textEditor.addEventListener("blur", () => {
       textEditorWrapper.classList.remove("selected");
       if (textEditor.textContent.trim().length === 0) {
+        console.info("Purging empty text");
         textEditorWrapper.parentElement.removeChild(textEditorWrapper);
       }
     });
@@ -82,7 +83,6 @@ class Text {
   focused() {
     const fsed =
       document.activeElement === this.element.querySelector(".text-editor");
-    console.log(fsed);
     return fsed;
   }
 
@@ -93,6 +93,7 @@ class Text {
 
   deselect() {
     this.isSelected = false;
+    console.info("Deselected text");
     this.element.classList.remove("selected");
   }
 

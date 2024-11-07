@@ -6,7 +6,7 @@ import { Text } from "./text.js";
 import { Image } from "./image.js";
 import { ClipPath } from "./clip.js";
 
-let elements = {};
+window._elements = {};
 let kind = null;
 const svg = document.getElementById("svgOverlay");
 const svgImage = document.createElementNS(
@@ -15,10 +15,22 @@ const svgImage = document.createElementNS(
 );
 
 document.addEventListener("DOMContentLoaded", () => {
-  chrome.storage.local.set({ linkback: true });
-  chrome.storage.local.get(["screenshot", "url"], function (result) {
-    const img = document.getElementById("screenshotImg");
+  try {
+    chrome.storage.local.set({ linkback: true });
+    chrome.storage.local.get(["screenshot", "url"], screenshotHandler);
+  } catch (err) {
+    // Let's assume we are in test mode. testImage then exists by global import
+    screenshotHandler({
+      screenshot: testImage,
+      url: "https://mostlymaths.net/sketches",
+    });
+  }
+
+  // ----
+
+  function screenshotHandler(result) {
     console.log(result);
+    const img = document.getElementById("screenshotImg");
     img.src = result.screenshot;
 
     const sourceLinkDiv = document.getElementById("sourceLink");
@@ -38,7 +50,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const dpi = window.devicePixelRatio;
       svgImage.setAttribute("width", img.width / dpi);
       svgImage.setAttribute("height", img.height / dpi);
-      svg.appendChild(svgImage);
+      // Just to make sure it is always on top, for tests
+      svg.insertBefore(svgImage, svg.firstChild);
 
       // Remove the original img element
       img.parentNode.removeChild(img);
@@ -51,14 +64,16 @@ document.addEventListener("DOMContentLoaded", () => {
       );
       filter.setAttribute("id", "drop-shadow");
       filter.innerHTML = `
-        <feDropShadow dx="3" dy="3" stdDeviation="3" flood-color="rgba(50, 50, 50, 0.7)" />
-        <feDropShadow dx="-3" dy="-3" stdDeviation="3" flood-color="rgba(200, 200, 200, 0.7)" />
-      `;
-      svg.appendChild(filter);
+      <!--<feDropShadow dx="3" dy="3" stdDeviation="3" flood-color="rgba(50, 50, 50, 0.7)" />-->
+      <feDropShadow dx="-3" dy="-3" stdDeviation="3" flood-color="rgba(200, 200, 200, 0.7)" />
+    `;
+      // Just to make sure it is always on top, for tests
+
       const defs = document.createElementNS(
         "http://www.w3.org/2000/svg",
         "defs",
       );
+      defs.insertBefore(filter, defs.firstChild);
       const createMarker = (color) => {
         const marker = document.createElementNS(
           "http://www.w3.org/2000/svg",
@@ -79,8 +94,8 @@ document.addEventListener("DOMContentLoaded", () => {
       for (let color in colors) {
         createMarker(color);
       }
-
-      svg.appendChild(defs);
+      // Just to make sure it is always on top, for tests
+      svg.insertBefore(defs, svg.firstChild);
       svg.addEventListener("textInput", (event) => {
         console.log(event);
         if (currentTextElement) {
@@ -88,10 +103,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
     };
-  });
+  }
 
   const svg = document.getElementById("svgOverlay");
-  const img = document.getElementById("screenshotImg");
   let isDrawing = false;
 
   let colorName = "red";
@@ -100,11 +114,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let startX, startY;
   let rect;
   let arrow;
-  let activeTextEditor;
-  let offsetX, offsetY;
-  let textEditor;
-  let textEditorOffsetX, textEditorOffsetY;
-  let clipPathRect;
   let selected = null;
   let dragging = false;
 
@@ -124,10 +133,14 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         kind = "colorSettings";
       }
+      if (selected && selected.is) {
+        selected.deselect();
+      }
       selected = null;
       return;
     }
     if (event.key === "Escape" && isDrawing) {
+      // TODO(me) This is still legacy handling
       if (rect) {
         svg.removeChild(rect);
         rect = null;
@@ -143,12 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (event.key === "Escape" && kind === "text") {
       return;
     }
-    if (
-      kind === "text" &&
-      selected &&
-      selected.is("text") &&
-      selected.focused()
-    ) {
+    if (selected && selected.is("text") && selected.focused()) {
       console.log("texting");
       event.stopPropagation();
       return;
@@ -189,10 +197,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const clipPathUrl = svgImage.getAttribute("clip-path");
       if (clipPathUrl) {
         const id = clipPathUrl.substring(5, clipPathUrl.length - 1);
-        const clip = elements[id];
+        const clip = window._elements[id];
         clip.image.setAttribute("x", 0);
         clip.image.setAttribute("y", 0);
         clip.delete();
+        if (selected && selected.is) {
+          selected.deselect();
+        }
         selected = null;
         kind = null;
         return;
@@ -209,6 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (event.key === "a") {
       isDrawing = true;
       kind = "arrow";
+      console.info("Drawing arrow");
     }
     if (event.key === "v") {
       kind = "paste";
@@ -217,6 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (event.key === "t") {
       isDrawing = true;
+      console.info("Creating text");
       kind = "text";
       event.stopPropagation();
       return;
@@ -230,7 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
         chrome.storage.local.set({ linkback: false });
       }
       if (selected.is) {
-        delete elements[selected.id];
+        delete window._elements[selected.id];
         selected.delete();
       } else {
         selected.parentElement.removeChild(selected);
@@ -254,10 +267,11 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log(selected);
     console.log(selected && selected.is);
     if (selected && selected.is) {
+      console.log("Deselecting while on mousedown?");
       selected.deselect();
     }
-    console.log(event);
     Array.from(document.querySelectorAll(".text-editor")).map((t) => {
+      console.log("Blurred", t);
       t.blur();
     });
     if (isDrawing) {
@@ -278,7 +292,7 @@ document.addEventListener("DOMContentLoaded", () => {
                       svg,
                     );
 
-                    elements[pastedImage.id] = pastedImage;
+                    window._elements[pastedImage.id] = pastedImage;
                     selected = pastedImage;
                   };
                   reader.readAsDataURL(blob);
@@ -294,16 +308,16 @@ document.addEventListener("DOMContentLoaded", () => {
       startY = event.offsetY;
       if (kind === "rect" || kind === "highlight") {
         const rect = new Rect(startX, startY, colorName, svg, kind);
-        elements[rect.id] = rect;
+        window._elements[rect.id] = rect;
         selected = rect;
         event.preventDefault();
         return;
       }
       if (kind === "clipping") {
         const newClipPath = new ClipPath(startX, startY, svg, svgImage);
-        elements[newClipPath.id] = newClipPath;
+        window._elements[newClipPath.id] = newClipPath;
         console.log(newClipPath);
-        console.log(elements);
+        console.log(window._elements);
         newClipPath.applyToImage();
         selected = newClipPath;
         return;
@@ -317,14 +331,16 @@ document.addEventListener("DOMContentLoaded", () => {
           color,
           document.getElementById("screenshotContainer"),
         );
-
-        elements[text.id] = text;
+        console.log(`Created text ${startX}, ${startY}`);
+        window._elements[text.id] = text;
         selected = text;
+        event.stopPropagation(); // Otherwise it will blur itself
+        event.preventDefault();
         return;
       }
       if (kind === "arrow") {
         arrow = new Arrow(startX, startY, colorName, svg);
-        elements[arrow.id] = arrow;
+        window._elements[arrow.id] = arrow;
         event.preventDefault();
         selected = arrow;
         return;
@@ -335,10 +351,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Cleanup anything otherwise, since now we are selecting / starting drag
-    selected = null;
-    kind = null;
-    for (let el in elements) {
-      elements[el].deselect();
+    if (selected && selected.is) {
+      selected.deselect();
+      selected = null;
+      kind = null;
+    }
+
+    for (let el in window._elements) {
+      window._elements[el].deselect();
     }
     if (event.target.tagName === "rect") {
       dragging = true;
@@ -346,7 +366,7 @@ document.addEventListener("DOMContentLoaded", () => {
       selected = event.target;
       const _kind = selected.getAttribute("_kind");
       if (["rect", "highlight", "clip"].includes(_kind)) {
-        selected = elements[selected.getAttribute("id")];
+        selected = window._elements[selected.getAttribute("id")];
         kind = selected.kind;
         selected.select();
         selected.dragInit(event.clientX, event.clientY);
@@ -360,7 +380,7 @@ document.addEventListener("DOMContentLoaded", () => {
       selected = event.target;
       if (selected.getAttribute("_kind") === "image") {
         // This is a pasted image
-        selected = elements[selected.getAttribute("id")];
+        selected = window._elements[selected.getAttribute("id")];
         selected.select();
         selected.dragInit(event.clientX, event.clientY);
         console.log("Ref: Selected an image");
@@ -389,7 +409,7 @@ document.addEventListener("DOMContentLoaded", () => {
             event.offsetY <= rectY + rectHeight
           ) {
             // Click is inside the clip path
-            selected = elements[clipPathId];
+            selected = window._elements[clipPathId];
             selected.select();
             selected.dragInit(event.clientX, event.clientY);
             console.log("Ref: Selected a clip path");
@@ -417,12 +437,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // The source link is handled in isolation
     if (
-      event.target.id == "sourceLink" ||
-      event.target.parentElement.id == "sourceLink"
+      event.target &&
+      (event.target.id == "sourceLink" ||
+        (event.target.parentElement &&
+          event.target.parentElement.id == "sourceLink"))
     ) {
       selected = event.target.closest("#sourceLink");
-      offsetX = event.clientX - selected.offsetLeft;
-      offsetY = event.clientY - selected.offsetTop;
+      //offsetX = event.clientX - selected.offsetLeft;
+      //offsetY = event.clientY - selected.offsetTop;
       dragging = true;
       kind = "source";
       event.stopPropagation();
@@ -430,16 +452,24 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const _kind = event.target.getAttribute("_kind");
+    const _kind =
+      event.target &&
+      event.target.getAttribute &&
+      event.target.getAttribute("_kind");
     if (!_kind) {
       console.info("Clicked on something useless unexpectedly");
+      console.info(event.target);
+      console.info(selected);
+      if (selected) {
+        selected.deselect();
+      }
       return;
     }
     kind = _kind;
     selected = event.target;
     dragging = true;
 
-    selected = elements[selected.getAttribute("id")];
+    selected = window._elements[selected.getAttribute("id")];
     selected.select();
     selected.dragInit(event.clientX, event.clientY);
     console.log(`Ref: Selected an ${kind}`);
@@ -459,22 +489,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     event.preventDefault();
-
-    if (dragging && kind === "svg" && clipPathRect) {
-      alert("This should not happen");
-      requestAnimationFrame(() => {
-        const deltaX = event.clientX - startX;
-        const deltaY = event.clientY - startY;
-
-        // Apply the delta to the initial position of the clipPathRect
-        const newX = svg.getBoundingClientRect().left + deltaX;
-        const newY = svg.getBoundingClientRect().top + deltaY;
-        console.log(newX, newY);
-        clipPathRect.setAttribute("x", newX);
-        clipPathRect.setAttribute("y", newY);
-      });
-      return;
-    }
 
     if (dragging && kind === "source") {
       const bbox = selected.getBoundingClientRect();
@@ -502,15 +516,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  svg.addEventListener("mouseup", () => {
+  document.addEventListener("mouseup", () => {
     if (isDrawing) {
+      console.info("Stopped drawing");
       isDrawing = false;
       rect = null;
       arrow = null;
       if (selected.is) {
-        console.log("deselecting");
-        selected.deselect();
-        selected = null;
+        console.info("Deselecting on mouseup while drawing");
+        if (!selected.is("text")) {
+          selected.deselect();
+          selected = null;
+        }
       }
     }
 

@@ -1,0 +1,67 @@
+body {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+#screenshotContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
+  transform: scale(0.25);
+}
+#mocha {
+  /* Only needed when displaying the container */
+  /*transform: translate(500px, 0)*/
+}
+#screenshotImg {
+  display: block;
+}
+svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1; /* Ensure SVG is on top */
+}
+.text-editor-wrapper {
+  /* Add a wrapper div */
+  font-family: "Roboto Mono";
+  font-size: 18px;
+  position: absolute;
+  z-index: 2;
+  /* Add margin to create a draggable fringe */
+  margin: 10px;
+  border-radius: 0.3em;
+  min-width: calc(5em + 10px);
+  min-height: calc(1em + 10px);
+  border: 0.5em solid transparent;
+}
+.text-editor-wrapper.selected {
+  border: 0.5em solid rgba(100, 100, 100, 0.3);
+}
+.text-editor {
+  position: absolute;
+  z-index: 2;
+  min-width: 5em;
+  padding: 5px;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+.text-editor:focus {
+  outline: none;
+}
+#sourceLink {
+  font-size: 18px;
+  position: absolute;
+  top: 3em;
+  left: 3em;
+  padding: 5px 10px;
+  background-color: rgba(50, 50, 50, 0.95);
+  border: 1px solid rgba(255, 0, 0, 0.5);
+  border-radius: 0.3em;
+  font-family: "Roboto Mono";
+  z-index: 2;
+}
+#sourceLink > a {
+  color: #d5a900ff;
+}

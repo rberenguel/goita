@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mocha Tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://unpkg.com/mocha/mocha.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="screenshotContainer">
+      <div id="sourceLink"></div>
+      <svg id="svgOverlay"></svg>
+      <img id="screenshotImg" />
+    </div>
+    <script src="chai.js"></script>
+    <script src="mocha.js"></script>
+    <div id="mocha"></div>
+    <script type="module">
+      mocha.setup("bdd");
+    </script>
+    <script src="testImage.js"></script>
+    <script type="module" src="../src/screenshot.js"></script>
+    <script type="module" src="test_arrow.js"></script>
+  </body>
+</html>
