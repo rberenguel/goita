@@ -7,7 +7,7 @@ class Text {
     this.color = color;
     this.container = container;
     this.element = this.createTextEditorElement();
-    this.isSelected = false;
+    this.isSelected = true;
     this.id = `text-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
     this.element.setAttribute("id", this.id);
     this.element.setAttribute("_kind", "text");
@@ -18,12 +18,15 @@ class Text {
   }
 
   createTextEditorElement() {
+    this.isSelected = true;
     const textEditorWrapper = document.createElement("div");
     textEditorWrapper.classList.add("text-editor-wrapper");
     textEditorWrapper.style.left = `calc(${this.x}px - 2em)`;
     textEditorWrapper.style.top = `calc(${this.y}px - 2em)`;
 
     const textEditor = document.createElement("div");
+    this._textEditor = textEditor;
+    console.log(this._textEditor);
     textEditor.classList.add("text-editor");
     textEditor.style.color = this.color(1);
     textEditor.contentEditable = true;
@@ -55,15 +58,18 @@ class Text {
 
     textEditor.addEventListener("blur", () => {
       textEditorWrapper.classList.remove("selected");
-      if (textEditor.textContent.trim().length === 0) {
-        console.info("Purging empty text");
-        textEditorWrapper.parentElement.removeChild(textEditorWrapper);
-      }
+      console.info("Text editor has blurred");
+      console.log(this.isSelected);
+      this.deselect();
     });
 
     textEditor.focus();
 
     return textEditorWrapper;
+  }
+
+  updateShape() {
+    // Just a placeholder
   }
 
   dragInit(clientX, clientY) {
@@ -92,9 +98,19 @@ class Text {
   }
 
   deselect() {
-    this.isSelected = false;
-    console.info("Deselected text");
-    this.element.classList.remove("selected");
+    if (this.isSelected) {
+      this.isSelected = false;
+      console.info("Deselected text");
+      const te = this.element.querySelector(".text-editor");
+      console.info(te.textContent);
+      this.element.classList.remove("selected");
+      if (te.textContent.trim().length === 0) {
+        console.info("Purging empty text");
+        console.log(this.element);
+        this.element.parentElement &&
+          this.element.parentElement.removeChild(this.element);
+      }
+    }
   }
 
   delete() {

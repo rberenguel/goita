@@ -42,7 +42,7 @@ describe("Arrow", function () {
     chai.expect(arrows.length).to.eql(1);
     _arr = arrows[0];
     const arr = window._elements[_arr.getAttribute("id")];
-    chai.expect(arr.is("arrow"));
+    chai.expect(arr.is("arrow")).to.be.true;
     setTimeout(done, 100);
   });
   it("should be selected by clicking on it", function (done) {
@@ -51,7 +51,7 @@ describe("Arrow", function () {
     _arr.dispatchEvent(mev(710, 500, "mouseup"));
     const arr = window._elements[_arr.getAttribute("id")];
     chai.expect(arr.is("arrow"));
-    chai.expect(arr.isSelected);
+    chai.expect(arr.isSelected).to.be.true;
     setTimeout(done, 100);
   });
 
@@ -62,7 +62,7 @@ describe("Arrow", function () {
     _arr.dispatchEvent(mev(0, 0, "mouseup"));
     const arr = window._elements[_arr.getAttribute("id")];
     chai.expect(arr.is("arrow"));
-    chai.expect(arr.isSelected);
+    chai.expect(arr.isSelected).to.be.true;
     //chai.expect(_arr.getAttribute("x1")).to.eql(1000)
     setTimeout(done, 100);
   });
@@ -87,6 +87,19 @@ describe("Arrow", function () {
     );
     chai.expect(arrows.length).to.eql(0);
     chai.expect(Object.keys(window._elements).length).to.eql(0);
+    setTimeout(done, 100);
+  });
+  it("too small arrows vanish", function (done) {
+    const a = kev("a");
+    document.dispatchEvent(a);
+    document.dispatchEvent(mev(700, 500, "mousedown"));
+    document.dispatchEvent(mev(705, 500, "mousemove"));
+    document.dispatchEvent(mev(0, 0, "mouseup"));
+    const all = Array.from(document.querySelectorAll("*"));
+    const arrows = all.filter(
+      (a) => a.getAttribute("_kind") && a.getAttribute("_kind") === "arrow",
+    );
+    chai.expect(arrows.length).to.eql(0);
     setTimeout(done, 100);
   });
 });

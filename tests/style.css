@@ -12,7 +12,7 @@ body {
 }
 #mocha {
   /* Only needed when displaying the container */
-  /*transform: translate(500px, 0)*/
+  /*transform: translate(500px, 0);*/
 }
 #screenshotImg {
   display: block;

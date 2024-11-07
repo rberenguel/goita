@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Rect Tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://unpkg.com/mocha/mocha.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div
+      style="
+        width: 100%;
+        height: 100vh;
+        position: absolute;
+        top: 0;
+        z-index: -1;
+        background-color: var(--mocha-bg-color);
+      "
+    ></div>
+    <div id="screenshotContainer" style="display: inherit; z-index: -100">
+      <div id="sourceLink"></div>
+      <svg id="svgOverlay"></svg>
+      <img id="screenshotImg" />
+    </div>
+    <script src="chai.js"></script>
+    <script src="mocha.js"></script>
+    <div id="mocha" style="z-index: 10"></div>
+    <script type="module">
+      mocha.setup("bdd");
+    </script>
+    <script src="testImage.js"></script>
+    <script type="module" src="../src/screenshot.js"></script>
+    <script type="module" src="test_text.js"></script>
+  </body>
+</html>

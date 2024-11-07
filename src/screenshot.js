@@ -189,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
       kind = null;
     }
     if (event.key === "r") {
-      console.log("drawing");
+      console.info("Drawing rect");
       isDrawing = true;
       kind = "rect";
     }

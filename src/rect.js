@@ -17,6 +17,7 @@ class Rect {
     this.id = `rect-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
     this.element.setAttribute("id", this.id);
     this.element.setAttribute("_kind", this.kind);
+    this.isSelected = false;
   }
 
   is(kind) {
@@ -79,10 +80,12 @@ class Rect {
 
   select() {
     this.element.setAttribute("filter", "url(#drop-shadow)");
+    this.isSelected = true;
   }
 
   deselect() {
     this.element.removeAttribute("filter");
+    this.isSelected = false;
   }
 
   delete() {
