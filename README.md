@@ -47,6 +47,12 @@ For all these, creation and deletion (click the element and press backspace) sho
 - [x] Paste images from the clipboard: press `v` and then click somewhere.
   - The pasted image is draggable.
   - The pasted image can be deleted by pressing backspace (like any other element after selection).
+- [x] Paste HTML text from the clipboard: press `v` and then click somewhere.
+  - The pasted text is draggable.
+  - The pasted text is contenteditable.
+  - The pasted image can be deleted by pressing backspace (like any other element after selection).
+  - [ ] test for this
+  - [ ] handle `text/plain`
 - [ ] Circles/ellipses
 - [x] The current mode and color (when drawing) is showed in the extension badge. Make sure to pin it.
 

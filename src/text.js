@@ -1,11 +1,12 @@
 export { Text };
 
 class Text {
-  constructor(x, y, color, container) {
+  constructor(x, y, color, container, text) {
     this.x = x;
     this.y = y;
     this.color = color;
     this.container = container;
+    this.text = text;
     this.element = this.createTextEditorElement();
     this.isSelected = true;
     this.id = `text-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
@@ -32,6 +33,11 @@ class Text {
     textEditor.contentEditable = true;
     textEditorWrapper.appendChild(textEditor);
 
+    if (this.text) {
+      console.log(this.text);
+      this._textEditor.innerHTML = this.text;
+    }
+
     this.container.appendChild(textEditorWrapper);
 
     textEditor.addEventListener("keydown", (ev) => {
@@ -51,6 +57,15 @@ class Text {
       textEditorWrapper.style.width = textEditor.offsetWidth + 20 + "px";
       textEditorWrapper.style.height = textEditor.offsetHeight + 20 + "px";
     });
+
+    if (this.text) {
+      const ev = new InputEvent("input", {
+        inputType: "",
+        bubbles: true,
+        cancelable: true,
+      });
+      textEditor.dispatchEvent(ev);
+    }
 
     textEditor.addEventListener("focus", () => {
       textEditorWrapper.classList.add("selected");

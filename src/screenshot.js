@@ -312,6 +312,7 @@ document.addEventListener("DOMContentLoaded", () => {
         navigator.clipboard.read().then((clipboardItems) => {
           for (const clipboardItem of clipboardItems) {
             for (const type of clipboardItem.types) {
+              console.log(type);
               if (type === "image/png") {
                 clipboardItem.getType(type).then((blob) => {
                   const reader = new FileReader();
@@ -331,6 +332,27 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
                 break;
               }
+              if (type === "text/html") {
+                clipboardItem
+                  .getType(type)
+                  .then((blob) => blob.text())
+                  .then((html) => {
+                    // Process the HTML content
+                    console.log(html);
+                    const text = new Text(
+                      event.offsetX,
+                      event.offsetY,
+                      color,
+                      document.getElementById("screenshotContainer"),
+                      html,
+                    );
+                    window._elements[text.id] = text;
+                    selected = text;
+                    event.stopPropagation();
+                    event.preventDefault();
+                  });
+              }
+              console.log(clipboardItem.types);
             }
           }
         });
