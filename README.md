@@ -11,6 +11,12 @@
 
 An extension to take and annotate screenshots.
 
+## Demo video
+
+Click the image to open the video (youtube).
+
+[![](https://raw.githubusercontent.com/rberenguel/goita/refs/heads/gh-pages/media/goita-demo-v09.jpeg)](https://youtu.be/FFXH2IKZ_Vw&mode=theatre)
+
 ## Why? Aren't there a million like this?
 
 Yes, but this is mine.
@@ -22,12 +28,6 @@ Also, two features I have wanted for a while:
 ![](media/goita.jpg)
 
 2. In addition to an image, **it can export the screenshot as a `data:base64` encoded URL**, where the image is clickable (combines with point 1). I can't embed an example in a README (github seems to throw such a long URL away) but you can find it in [`media/data-url-example`](https://raw.githubusercontent.com/rberenguel/goita/refs/heads/gh-pages/media/data-url-example), copy that blob of text in the URL of your browser (tested in Chrome and Safari) and you should see a screenshot as the one above, clickable.
-
-## Demo video
-
-Click the image to open the video (youtube).
-
-[![](https://raw.githubusercontent.com/rberenguel/goita/refs/heads/gh-pages/media/goita-demo-v09.jpeg)](https://youtu.be/FFXH2IKZ_Vw)
 
 ## Annotation features
 
