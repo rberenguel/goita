@@ -159,8 +159,8 @@ class ClipPath {
   delete() {
     this.deselect(); // To ensure highlights go away
     this.image.removeAttribute("clip-path"); // Remove the clip-path from the image
-    clip.image.setAttribute("x", 0);
-    clip.image.setAttribute("y", 0);
+    this.image.setAttribute("x", 0);
+    this.image.setAttribute("y", 0);
     try {
       delete window._elements[this.id];
       this.svg.removeChild(this.element);
