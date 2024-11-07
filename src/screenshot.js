@@ -106,6 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const svg = document.getElementById("svgOverlay");
+  const help = document.getElementById("help");
   let isDrawing = false;
 
   let colorName = "red";
@@ -216,6 +217,13 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       kind = null;
       setBadge("empty");
+    }
+    if(event.key=== "h"){
+      if(help.classList.contains("hide")){
+        help.classList.remove("hide");
+      } else {
+        help.classList.add("hide")
+      }
     }
     if (event.key === "r") {
       console.info("Drawing rect");
