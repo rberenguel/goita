@@ -2,24 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Text Tests</title>
+    <title>Color Tests</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="https://unpkg.com/mocha/mocha.css" />
     <link rel="stylesheet" href="style.css" />
   </head>
-  <body style="overflow: hidden">
-    <!-- Hide overflow for the test overlay -->
-    <div
-      style="
-        width: 500vh;
-        height: 100vh;
-        position: absolute;
-        top: 0;
-        z-index: -1;
-        background-color: var(--mocha-bg-color);
-      "
-    ></div>
-    <div id="screenshotContainer" style="display: inherit; z-index: -100">
+  <body>
+    <div id="screenshotContainer" style="">
       <div id="sourceLink"></div>
       <svg id="svgOverlay"></svg>
       <img id="screenshotImg" />
@@ -32,6 +21,6 @@
     </script>
     <script src="testImage.js"></script>
     <script type="module" src="../src/screenshot.js"></script>
-    <script type="module" src="test_text.js"></script>
+    <script type="module" src="test_color.js"></script>
   </body>
 </html>

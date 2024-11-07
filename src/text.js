@@ -26,14 +26,14 @@ class Text {
 
     const textEditor = document.createElement("div");
     this._textEditor = textEditor;
-    console.log(this._textEditor);
+
     textEditor.classList.add("text-editor");
     textEditor.style.color = this.color(1);
     textEditor.contentEditable = true;
     textEditorWrapper.appendChild(textEditor);
 
     this.container.appendChild(textEditorWrapper);
-    console.log(this.container);
+
     textEditor.addEventListener("keydown", (ev) => {
       if (ev.key === "Escape") {
         textEditor.blur();
@@ -58,8 +58,6 @@ class Text {
 
     textEditor.addEventListener("blur", () => {
       textEditorWrapper.classList.remove("selected");
-      console.info("Text editor has blurred");
-      console.log(this.isSelected);
       this.deselect();
     });
 
@@ -100,13 +98,12 @@ class Text {
   deselect() {
     if (this.isSelected) {
       this.isSelected = false;
-      console.info("Deselected text");
+
       const te = this.element.querySelector(".text-editor");
-      console.info(te.textContent);
+      console.info(`Deselected text: '${te.textContent}'`);
       this.element.classList.remove("selected");
       if (te.textContent.trim().length === 0) {
         console.info("Purging empty text");
-        console.log(this.element);
         this.element.parentElement &&
           this.element.parentElement.removeChild(this.element);
       }
@@ -114,6 +111,11 @@ class Text {
   }
 
   delete() {
-    this.container.removeChild(this.element);
+    try {
+      delete window._elements[this.id];
+      this.container.removeChild(this.element);
+    } catch (err) {
+      console.log(err);
+    }
   }
 }

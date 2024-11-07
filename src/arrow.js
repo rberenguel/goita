@@ -53,23 +53,14 @@ class Arrow {
   }
 
   dragInit(clientX, clientY) {
-    console.log(this.element);
     const startX = parseFloat(this.element.getAttribute("x1"));
     const startY = parseFloat(this.element.getAttribute("y1"));
     const endX = parseFloat(this.element.getAttribute("x2"));
     const endY = parseFloat(this.element.getAttribute("y2"));
-    console.log(parseFloat(this.element.getAttribute("x2")));
-    console.table({ clientX, clientY, startX, startY, endX, endY });
     this.startOffsetX = clientX - startX;
     this.startOffsetY = clientY - startY;
     this.endOffsetX = clientX - endX;
     this.endOffsetY = clientY - endY;
-    console.debug("Ref: started drag on arrow");
-    console.table({
-      sofx: this.startOffsetX,
-      eofx: this.endOffsetX,
-      eofy: this.endOffsetY,
-    });
   }
 
   drag(event) {
@@ -80,7 +71,6 @@ class Arrow {
     const newEndY = event.clientY - this.endOffsetY;
     let tofx = this.endOffsetX;
     let sofx = this.startOffsetX;
-    console.table({ sofx, tofx, newStartX, newStartY, newEndX, newEndY });
     // Update the arrow's position
     requestAnimationFrame(() => {
       this.element.setAttribute("x1", newStartX);
@@ -107,6 +97,11 @@ class Arrow {
   }
 
   delete() {
-    this.svg.removeChild(this.element);
+    try {
+      delete window._elements[this.id];
+      this.svg.removeChild(this.element);
+    } catch (err) {
+      console.log(err);
+    }
   }
 }

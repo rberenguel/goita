@@ -1,4 +1,4 @@
-export { kev, mev, del };
+export { kev, mev, del, esc };
 
 const kev = (letter) =>
   new KeyboardEvent("keydown", {
@@ -8,6 +8,10 @@ const kev = (letter) =>
 
 const del = new KeyboardEvent("keydown", {
   key: "Backspace",
+});
+
+const esc = new KeyboardEvent("keydown", {
+  key: "Escape",
 });
 
 const mev = (_clientX, _clientY, kind) => {

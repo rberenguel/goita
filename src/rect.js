@@ -44,12 +44,14 @@ class Rect {
   }
 
   updateShape(event) {
-    const width = event.offsetX - this.startX;
-    const height = event.offsetY - this.startY;
+    const width = event.pageX - this.startX;
+    const height = event.pageY - this.startY;
 
     // Calculate x and y based on width and height
-    const x = width < 0 ? event.offsetX : this.startX;
-    const y = height < 0 ? event.offsetY : this.startY;
+    // pageX instead of offset to prevent issues when mousemove
+    // passes over text.
+    const x = width < 0 ? event.pageX : this.startX;
+    const y = height < 0 ? event.pageY : this.startY;
 
     this.x = x;
     this.y = y;
@@ -89,6 +91,11 @@ class Rect {
   }
 
   delete() {
-    this.svg.removeChild(this.element);
+    try {
+      delete window._elements[this.id];
+      this.svg.removeChild(this.element);
+    } catch (err) {
+      console.log(err);
+    }
   }
 }

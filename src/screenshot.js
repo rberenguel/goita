@@ -29,7 +29,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // ----
 
   function screenshotHandler(result) {
-    console.log(result);
     const img = document.getElementById("screenshotImg");
     img.src = result.screenshot;
 
@@ -98,6 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
       svg.insertBefore(defs, svg.firstChild);
       svg.addEventListener("textInput", (event) => {
         console.log(event);
+        alert("WHAT");
         if (currentTextElement) {
           currentTextElement.textContent += event.data;
         }
@@ -117,8 +117,46 @@ document.addEventListener("DOMContentLoaded", () => {
   let selected = null;
   let dragging = false;
 
+  function setBadge(kind) {
+    const kindMap = {
+      arrow: "↗",
+      clip: "✂",
+      rect: "▭",
+      highlight: "░",
+      text: "|",
+      paste: "↧",
+      color: "c?",
+    };
+    if (kind === "empty") {
+      chrome.action.setTitle({ title: "" });
+      chrome.action.setBadgeText({ text: "" });
+    }
+    try {
+      const title = kindMap[kind] ?? "";
+      if (kind === "paste") {
+        chrome.action.setBadgeBackgroundColor({ color: "black" });
+      } else {
+        chrome.action.setBadgeBackgroundColor({ color: colors[colorName](1) });
+      }
+
+      chrome.action.setTitle({ title: title });
+      chrome.action.setBadgeText({ text: title });
+    } catch (err) {
+      console.info(err);
+    }
+  }
+  setBadge("empty");
+
   document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && isDrawing) {
+      isDrawing = false;
+      if (selected) {
+        selected.delete();
+      }
+    }
     if (event.key === "Escape" && selected) {
+      console.log("Escaping selected");
+      console.info(selected);
       if (selected.is) {
         selected.deselect();
       } else {
@@ -136,27 +174,15 @@ document.addEventListener("DOMContentLoaded", () => {
       if (selected && selected.is) {
         selected.deselect();
       }
+      setBadge("color");
       selected = null;
       return;
     }
-    if (event.key === "Escape" && isDrawing) {
-      // TODO(me) This is still legacy handling
-      if (rect) {
-        svg.removeChild(rect);
-        rect = null;
-      }
-      if (arrow) {
-        // If drawing an arrow
-        svg.removeChild(arrow);
-        arrow = null;
-      }
-      // Text input handles itself by blur
-      isDrawing = false;
-    }
+
     if (event.key === "Escape" && kind === "text") {
       return;
     }
-    if (selected && selected.is("text") && selected.focused()) {
+    if (selected && selected.is && selected.is("text") && selected.focused()) {
       console.log("texting");
       event.stopPropagation();
       return;
@@ -187,17 +213,20 @@ document.addEventListener("DOMContentLoaded", () => {
         color = colors["white"];
       }
       kind = null;
+      setBadge("empty");
     }
     if (event.key === "r") {
       console.info("Drawing rect");
       isDrawing = true;
       kind = "rect";
+      setBadge("rect");
     }
     if (event.key === "k") {
       const clipPathUrl = svgImage.getAttribute("clip-path");
       if (clipPathUrl) {
         const id = clipPathUrl.substring(5, clipPathUrl.length - 1);
         const clip = window._elements[id];
+        delete window._elements[id];
         clip.image.setAttribute("x", 0);
         clip.image.setAttribute("y", 0);
         clip.delete();
@@ -211,13 +240,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
       isDrawing = true;
       kind = "clipping";
+      setBadge("clip");
     }
     if (event.key === "s") {
+      setBadge("highlight");
       console.log("drawing highlight");
       isDrawing = true;
       kind = "highlight";
     }
     if (event.key === "a") {
+      // TEST
+      setBadge("arrow");
+      // TEST
       isDrawing = true;
       kind = "arrow";
       console.info("Drawing arrow");
@@ -226,12 +260,14 @@ document.addEventListener("DOMContentLoaded", () => {
       kind = "paste";
       isDrawing = true;
       event.stopPropagation();
+      setBadge("paste");
     }
     if (event.key === "t") {
+      setBadge("text");
       isDrawing = true;
-      console.info("Creating text");
       kind = "text";
       event.stopPropagation();
+      console.info("Creating text");
       return;
     }
     if (event.key === "Enter" && kind === "text") {
@@ -264,14 +300,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (event.button != 0) {
       return;
     }
-    console.log(selected);
-    console.log(selected && selected.is);
     if (selected && selected.is) {
-      console.log("Deselecting while on mousedown?");
       selected.deselect();
     }
     Array.from(document.querySelectorAll(".text-editor")).map((t) => {
-      console.log("Blurred", t);
       t.blur();
     });
     if (isDrawing) {
@@ -331,7 +363,6 @@ document.addEventListener("DOMContentLoaded", () => {
           color,
           document.getElementById("screenshotContainer"),
         );
-        console.log(`Created text ${startX}, ${startY}`);
         window._elements[text.id] = text;
         selected = text;
         event.stopPropagation(); // Otherwise it will blur itself
@@ -383,7 +414,6 @@ document.addEventListener("DOMContentLoaded", () => {
         selected = window._elements[selected.getAttribute("id")];
         selected.select();
         selected.dragInit(event.clientX, event.clientY);
-        console.log("Ref: Selected an image");
         dragging = true;
       } else {
         // This is the main screenshot image. Handling clipping paths is done differently.
@@ -412,7 +442,6 @@ document.addEventListener("DOMContentLoaded", () => {
             selected = window._elements[clipPathId];
             selected.select();
             selected.dragInit(event.clientX, event.clientY);
-            console.log("Ref: Selected a clip path");
             dragging = true;
           } else {
             // Click is outside the clip path, do nothing
@@ -458,8 +487,6 @@ document.addEventListener("DOMContentLoaded", () => {
       event.target.getAttribute("_kind");
     if (!_kind) {
       console.info("Clicked on something useless unexpectedly");
-      console.info(event.target);
-      console.info(selected);
       if (selected) {
         selected.deselect();
       }
@@ -472,7 +499,6 @@ document.addEventListener("DOMContentLoaded", () => {
     selected = window._elements[selected.getAttribute("id")];
     selected.select();
     selected.dragInit(event.clientX, event.clientY);
-    console.log(`Ref: Selected an ${kind}`);
 
     event.preventDefault();
     event.stopPropagation();
@@ -488,6 +514,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (event.button != 0) {
       return;
     }
+
     event.preventDefault();
 
     if (dragging && kind === "source") {
@@ -504,11 +531,6 @@ document.addEventListener("DOMContentLoaded", () => {
       selected.updateShape(event);
       return;
     }
-
-    if (isDrawing && kind === "arrow" && selected && selected.is) {
-      // This should be generic regardless of whether it is an arrow or not
-      selected.updateShape(event);
-    }
     if (selected && dragging && selected.is) {
       event.stopPropagation();
       selected.drag(event);
@@ -519,6 +541,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("mouseup", () => {
     if (isDrawing) {
       console.info("Stopped drawing");
+      setBadge("empty");
       isDrawing = false;
       rect = null;
       arrow = null;

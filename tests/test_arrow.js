@@ -1,28 +1,6 @@
 mocha.checkLeaks();
 mocha.run();
-
-const kev = (letter) =>
-  new KeyboardEvent("keydown", {
-    key: letter,
-    code: "Key" + letter.toUpperCase(), // The code for the "a" key
-  });
-
-const del = new KeyboardEvent("keydown", {
-  key: "Backspace",
-});
-
-const mev = (_clientX, _clientY, kind) => {
-  let clientX = _clientX;
-  let clientY = _clientY;
-
-  let ev = new MouseEvent(kind, {
-    clientX,
-    clientY,
-    bubbles: true,
-    cancelable: true,
-  });
-  return ev;
-};
+import { kev, mev, del, esc } from "./events.js";
 
 document.dispatchEvent(mev(700, 500, "mousedown"));
 
@@ -63,7 +41,6 @@ describe("Arrow", function () {
     const arr = window._elements[_arr.getAttribute("id")];
     chai.expect(arr.is("arrow"));
     chai.expect(arr.isSelected).to.be.true;
-    //chai.expect(_arr.getAttribute("x1")).to.eql(1000)
     setTimeout(done, 100);
   });
   it("should have dragged", function (done) {
@@ -100,6 +77,24 @@ describe("Arrow", function () {
       (a) => a.getAttribute("_kind") && a.getAttribute("_kind") === "arrow",
     );
     chai.expect(arrows.length).to.eql(0);
+    chai.expect(Object.keys(window._elements).length).to.eql(0);
+    setTimeout(done, 100);
+  });
+  it("should cancel by pressing ESC", function (done) {
+    console.info("Cancel on ESC");
+    const a = kev("a");
+    document.dispatchEvent(a);
+    document.dispatchEvent(mev(700, 500, "mousedown"));
+    document.dispatchEvent(mev(800, 600, "mousemove"));
+    document.dispatchEvent(esc);
+    document.dispatchEvent(mev(0, 0, "mouseup"));
+    document.dispatchEvent(mev(700, 500, "mousedown"));
+    const all = Array.from(document.querySelectorAll("*"));
+    const arrows = all.filter(
+      (a) => a.getAttribute("_kind") && a.getAttribute("_kind") === "arrow",
+    );
+    chai.expect(arrows.length).to.eql(0);
+    chai.expect(Object.keys(window._elements).length).to.eql(0);
     setTimeout(done, 100);
   });
 });
