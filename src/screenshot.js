@@ -127,10 +127,12 @@ document.addEventListener("DOMContentLoaded", () => {
       paste: "↧",
       color: "c?",
     };
-    if (kind === "empty") {
-      chrome.action.setTitle({ title: "" });
-      chrome.action.setBadgeText({ text: "" });
-    }
+    try {
+      if (kind === "empty") {
+        chrome.action.setTitle({ title: "" });
+        chrome.action.setBadgeText({ text: "" });
+      }
+    } catch (err) {}
     try {
       const title = kindMap[kind] ?? "";
       if (kind === "paste") {
