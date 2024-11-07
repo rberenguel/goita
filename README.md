@@ -56,6 +56,12 @@ I think there is an interaction mode I forgot to set up/clear up. More later.
 
 Download/clone this repository somewhere and load the extension in Chrome via `Extensions -> Load unpacked`. I only could get it to fully work once I enabled "enable in Incognito". If you don't feel like doing that, that's okay. I wrote this for my own use anyway…
 
+## Tests?
+
+It is kind of tested, at least the editing functionality (WIP). I took a leaf out of the development of Weave and added Chai/Mocha in-browser tests. They try to reproduce human behavior by sending browser events. I think it is neat, because I need no headless browser or anything.
+
+You can see them (in separate iframes) [here](https://mostlymaths.net/goita/tests/).
+
 ## Credits
 
 - Icon: Gemini via Imagen 3.
