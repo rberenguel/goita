@@ -95,28 +95,18 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       // Just to make sure it is always on top, for tests
       svg.insertBefore(defs, svg.firstChild);
-      svg.addEventListener("textInput", (event) => {
-        console.log(event);
-        alert("WHAT");
-        if (currentTextElement) {
-          currentTextElement.textContent += event.data;
-        }
-      });
     };
   }
 
   const svg = document.getElementById("svgOverlay");
   const help = document.getElementById("help");
-  let isDrawing = false;
 
-  let colorName = "red";
-  let color = colors[colorName];
-  // the useful globals, but most will go away;
-  let startX, startY;
-  let rect;
-  let arrow;
+  // the useful globals;
   let selected = null;
   let dragging = false;
+  let isDrawing = false;
+  let colorName = "red";
+  let color = colors[colorName];
 
   function setBadge(kind) {
     const kindMap = {
@@ -186,7 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     if (selected && selected.is && selected.is("text") && selected.focused()) {
-      console.log("texting");
+      console.info("Texting, stop any propagation");
       event.stopPropagation();
       return;
     }
@@ -218,11 +208,11 @@ document.addEventListener("DOMContentLoaded", () => {
       kind = null;
       setBadge("empty");
     }
-    if(event.key=== "h"){
-      if(help.classList.contains("hide")){
+    if (event.key === "h") {
+      if (help.classList.contains("hide")) {
         help.classList.remove("hide");
       } else {
-        help.classList.add("hide")
+        help.classList.add("hide");
       }
     }
     if (event.key === "r") {
@@ -347,8 +337,6 @@ document.addEventListener("DOMContentLoaded", () => {
                   .getType(type)
                   .then((blob) => blob.text())
                   .then((html) => {
-                    // Process the HTML content
-                    console.log(html);
                     const text = new Text(
                       event.offsetX,
                       event.offsetY,
@@ -358,18 +346,18 @@ document.addEventListener("DOMContentLoaded", () => {
                     );
                     window._elements[text.id] = text;
                     selected = text;
+                    kind = "text"; // This prevents typing on the block from being interpreted as commands
                     event.stopPropagation();
                     event.preventDefault();
                   });
               }
-              console.log(clipboardItem.types);
             }
           }
         });
         return;
       }
-      startX = event.offsetX;
-      startY = event.offsetY;
+      let startX = event.offsetX;
+      let startY = event.offsetY;
       if (kind === "rect" || kind === "highlight") {
         const rect = new Rect(startX, startY, colorName, svg, kind);
         window._elements[rect.id] = rect;
@@ -402,7 +390,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       if (kind === "arrow") {
-        arrow = new Arrow(startX, startY, colorName, svg);
+        const arrow = new Arrow(startX, startY, colorName, svg);
         window._elements[arrow.id] = arrow;
         event.preventDefault();
         selected = arrow;
@@ -504,8 +492,6 @@ document.addEventListener("DOMContentLoaded", () => {
           event.target.parentElement.id == "sourceLink"))
     ) {
       selected = event.target.closest("#sourceLink");
-      //offsetX = event.clientX - selected.offsetLeft;
-      //offsetY = event.clientY - selected.offsetTop;
       dragging = true;
       kind = "source";
       event.stopPropagation();
@@ -513,27 +499,41 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const _kind =
+    let _kind =
       event.target &&
       event.target.getAttribute &&
       event.target.getAttribute("_kind");
-    if (!_kind) {
-      console.info("Clicked on something useless unexpectedly");
-      if (selected) {
-        selected.deselect();
+
+    // This strange-looking block of ifs and fallthrough is to prevent click-on-text-and-type
+    // to be interpreted as commands (passing kind="text" is not enough, but needed).
+    if (
+      event.target &&
+      event.target.closest &&
+      event.target.closest(".text-editor-wrapper")
+    ) {
+      selected = event.target.closest(".text-editor-wrapper");
+      _kind = "text";
+    } else {
+      if (!_kind) {
+        console.info("Clicked on something useless unexpectedly");
+        if (selected) {
+          selected.deselect();
+        }
+        return;
+      } else {
+        selected = event.target;
       }
-      return;
     }
     kind = _kind;
-    selected = event.target;
     dragging = true;
 
     selected = window._elements[selected.getAttribute("id")];
     selected.select();
     selected.dragInit(event.clientX, event.clientY);
-
-    event.preventDefault();
-    event.stopPropagation();
+    if (kind != "text") {
+      event.preventDefault();
+      event.stopPropagation();
+    }
   });
 
   document.addEventListener("mouseup", () => {
@@ -575,8 +575,6 @@ document.addEventListener("DOMContentLoaded", () => {
       console.info("Stopped drawing");
       setBadge("empty");
       isDrawing = false;
-      rect = null;
-      arrow = null;
       if (selected.is) {
         console.info("Deselecting on mouseup while drawing");
         if (!selected.is("text")) {
