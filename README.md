@@ -44,6 +44,7 @@ For all these, creation and deletion (click the element and press backspace) sho
 - [x] Rectangles: press `r` and drag to create.
 - [x] Arrows: press `a` and drag to create from source to destination.
 - [x] Text: press `t` and click to place.
+  - [ ] `Ctrl-.` and `Ctrl-,` increase and decrease the font for text, respectively.
 - [x] Highlight: press `s` and drag to create. Use color `x` to redact. (why `s` and not `h`? Because all other shape/tool letters are on the left hand)
 - [x] Redact: Use highlighting with color "redact".
 - [x] Clip-on-drag the initial screenshot: press `k` at any time.
@@ -58,9 +59,10 @@ For all these, creation and deletion (click the element and press backspace) sho
   - The pasted text is contenteditable.
   - The pasted image can be deleted by pressing backspace (like any other element after selection).
   - [x] Handle `text/plain`
-- [x] Circles/ellipses
+- [x] Circles/ellipses: press `w` and drag, like a rectangle
 - [x] The current mode and color (when drawing) is showed in the extension badge. Make sure to pin it.
 - [x] Control font size for text (it is fixed and the same for all blocks)
+- [x] Most shortcuts are quickly customizable in a single file (`shortcuts.js`)
 
 ## Installation
 
