@@ -14,7 +14,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             navigator.clipboard.write([
               new ClipboardItem({ "image/png": blob }),
             ]);
-            console.log("Screenshot copied to clipboard!");
+            console.info("Screenshot copied to clipboard!");
             document.getElementById("message").textContent =
               "Screenshot (image) copied to clipboard";
           })
@@ -53,7 +53,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           </body>
           </html>
         `;
-          console.log(img);
           // Encode the HTML content as a data URL
           const htmlDataUrl = `data:text/html;base64,${btoa(htmlContent)}`;
 
@@ -61,7 +60,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           navigator.clipboard
             .writeText(htmlDataUrl)
             .then(() => {
-              console.log("HTML with screenshot copied to clipboard!");
+              console.info("HTML with screenshot copied to clipboard!");
               document.getElementById("message").textContent =
                 "HTML (with screenshot) copied to clipboard";
             })
@@ -73,7 +72,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     });
 
     window.addEventListener("keydown", (event) => {
-      console.log(event);
       if (event.key === "Enter") {
         document.getElementById("imageBtn").click(); // Simulate button click
       }

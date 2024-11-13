@@ -57,11 +57,10 @@ For all these, creation and deletion (click the element and press backspace) sho
   - The pasted text is draggable.
   - The pasted text is contenteditable.
   - The pasted image can be deleted by pressing backspace (like any other element after selection).
-  - [ ] Handle `text/plain`
-- [ ] Circles/ellipses
+  - [x] Handle `text/plain`
+- [x] Circles/ellipses
 - [x] The current mode and color (when drawing) is showed in the extension badge. Make sure to pin it.
-
-I think there is an interaction mode I forgot to set up/clear up. More later.
+- [x] Control font size for text (it is fixed and the same for all blocks)
 
 ## Installation
 

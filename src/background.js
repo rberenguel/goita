@@ -1,7 +1,6 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "captureVisibleTab") {
     chrome.tabs.captureVisibleTab(null, { format: "png" }, function (dataUrl) {
-      console.log(dataUrl);
       chrome.storage.local.set({ screenshotBlob: dataUrl });
     });
   }

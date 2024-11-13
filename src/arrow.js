@@ -101,7 +101,7 @@ class Arrow {
       delete window._elements[this.id];
       this.svg.removeChild(this.element);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 }

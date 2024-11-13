@@ -1,7 +1,7 @@
 export { Text };
 
 class Text {
-  constructor(x, y, color, container, text) {
+  constructor(x, y, color, container, text, fontSize) {
     this.x = x;
     this.y = y;
     this.color = color;
@@ -12,6 +12,8 @@ class Text {
     this.id = `text-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
     this.element.setAttribute("id", this.id);
     this.element.setAttribute("_kind", "text");
+    this.fontSize = fontSize;
+    this.size(fontSize);
   }
 
   is(kind) {
@@ -34,7 +36,6 @@ class Text {
     textEditorWrapper.appendChild(textEditor);
 
     if (this.text) {
-      console.log(this.text);
       this._textEditor.innerHTML = this.text;
     }
 
@@ -79,6 +80,10 @@ class Text {
     textEditor.focus();
 
     return textEditorWrapper;
+  }
+
+  size(fontSize) {
+    this.element.style.fontSize = `${fontSize}px`;
   }
 
   updateShape() {
@@ -130,7 +135,7 @@ class Text {
       delete window._elements[this.id];
       this.container.removeChild(this.element);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 }

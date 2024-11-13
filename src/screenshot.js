@@ -2,32 +2,38 @@ import { colors } from "./common.js";
 
 import { Arrow } from "./arrow.js";
 import { Rect } from "./rect.js";
+import { Ellipse } from "./ellipse.js";
 import { Text } from "./text.js";
 import { Image } from "./image.js";
 import { ClipPath } from "./clip.js";
+import { shortcuts } from "./shortcuts.js";
 
-window._elements = {};
+window._elements = {}; // I leak this into window to make testing easier.
+
 let kind = null;
 let screenshotFlipped = false;
 let mainScreenshot;
+let fontSize = 18;
 const svg = document.getElementById("svgOverlay");
 const svgImage = document.createElementNS(
   "http://www.w3.org/2000/svg",
   "image",
 );
 
+const wants = (ev) => {
+  return shortcuts[ev.key];
+};
+
 function imgFromClipboard(cb) {
   let data;
   navigator.clipboard.read().then((clipboardItems) => {
     for (const clipboardItem of clipboardItems) {
       for (const type of clipboardItem.types) {
-        console.log(type);
         if (type === "image/png") {
           clipboardItem.getType(type).then((blob) => {
             const reader = new FileReader();
             reader.onload = (e) => {
               const pastedImageDataUrl = e.target.result;
-              console.log(data);
               data = pastedImageDataUrl;
               cb(data);
             };
@@ -41,7 +47,6 @@ function imgFromClipboard(cb) {
 }
 
 const loadImage = (flipped) => (data) => {
-  console.log(flipped, data);
   if (!data) {
     return;
   }
@@ -167,6 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
       arrow: "↗",
       clip: "✂",
       rect: "▭",
+      ellipse: "⬭",
       highlight: "░",
       text: "|",
       paste: "↧",
@@ -218,7 +224,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
     if (event.key === "Escape" && selected) {
-      console.log("Escaping selected");
       console.info(selected);
       if (selected.is) {
         selected.deselect();
@@ -227,7 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       selected = null;
     }
-    if (event.key === "c") {
+    if (wants(event) == "color") {
       // Set up colors
       if (kind === "colorSettings") {
         kind = null;
@@ -243,6 +248,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (event.key === "Escape" && kind === "text") {
+      return;
+    }
+    // Finding a shortcut that is reasonable for this is hard, so
+    // I'm not making it configurable.
+    if (event.key === "." && event.ctrlKey && kind === "text") {
+      // Size control needs to happen before we stop propagation
+      // and short-circuit
+      fontSize = fontSize + 2;
+      selected.size(fontSize);
+      return;
+    }
+    if (event.key === "," && event.ctrlKey && kind === "text") {
+      // Size control needs to happen before we stop propagation
+      // and short-circuit
+      fontSize = Math.max(4, fontSize - 2);
+      selected.size(fontSize);
       return;
     }
     if (selected && selected.is && selected.is("text") && selected.focused()) {
@@ -279,19 +300,28 @@ document.addEventListener("DOMContentLoaded", () => {
       setBadge("empty");
     }
     if (event.key === "h") {
+      for (const [key, entity] of Object.entries(shortcuts)) {
+        help.innerHTML = help.innerHTML.replace(`{${entity}}`, `${key}`);
+      }
       if (help.classList.contains("hide")) {
         help.classList.remove("hide");
       } else {
         help.classList.add("hide");
       }
     }
-    if (event.key === "r") {
+    if (wants(event) == "rect") {
       console.info("Drawing rect");
       isDrawing = true;
       kind = "rect";
       setBadge("rect");
     }
-    if (event.key === "k") {
+    if (wants(event) == "ellipse") {
+      console.info("Drawing ellipse");
+      isDrawing = true;
+      kind = "ellipse";
+      setBadge("ellipse");
+    }
+    if (wants(event) == "clip") {
       const clipPathUrl = svgImage.getAttribute("clip-path");
       if (clipPathUrl) {
         const id = clipPathUrl.substring(5, clipPathUrl.length - 1);
@@ -312,27 +342,25 @@ document.addEventListener("DOMContentLoaded", () => {
       kind = "clipping";
       setBadge("clip");
     }
-    if (event.key === "s") {
+    if (wants(event) == "highlight") {
       setBadge("highlight");
-      console.log("drawing highlight");
+      console.info("drawing highlight");
       isDrawing = true;
       kind = "highlight";
     }
-    if (event.key === "a") {
-      // TEST
+    if (wants(event) == "arrow") {
       setBadge("arrow");
-      // TEST
       isDrawing = true;
       kind = "arrow";
       console.info("Drawing arrow");
     }
-    if (event.key === "v") {
+    if (wants(event) == "paste") {
       kind = "paste";
       isDrawing = true;
       event.stopPropagation();
       setBadge("paste");
     }
-    if (event.key === "t") {
+    if (wants(event) == "text") {
       setBadge("text");
       isDrawing = true;
       kind = "text";
@@ -401,7 +429,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
                 break;
               }
-              if (type === "text/html") {
+              if (type === "text/html" || type === "text/plain") {
                 clipboardItem
                   .getType(type)
                   .then((blob) => blob.text())
@@ -434,11 +462,16 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
         return;
       }
+      if (kind === "ellipse") {
+        const ellipse = new Ellipse(startX, startY, colorName, svg);
+        window._elements[ellipse.id] = ellipse;
+        selected = ellipse;
+        event.preventDefault();
+        return;
+      }
       if (kind === "clipping") {
         const newClipPath = new ClipPath(startX, startY, svg, svgImage);
         window._elements[newClipPath.id] = newClipPath;
-        console.log(newClipPath);
-        console.log(window._elements);
         newClipPath.applyToImage();
         selected = newClipPath;
         return;
@@ -451,6 +484,8 @@ document.addEventListener("DOMContentLoaded", () => {
           startY,
           color,
           document.getElementById("screenshotContainer"),
+          undefined,
+          fontSize,
         );
         window._elements[text.id] = text;
         selected = text;
@@ -510,7 +545,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const clipPathUrl = imageObject.getAttribute("clip-path");
 
         if (clipPathUrl) {
-          console.log("Has a clip path");
           const clipPathId = clipPathUrl.substring(5, clipPathUrl.length - 1);
           const clipPath = document.getElementById(clipPathId);
           const clipPathRect = clipPath.querySelector("rect");

@@ -93,6 +93,9 @@
       .hide {
         display: none;
       }
+      .u {
+        text-decoration: underline;
+      }
     </style>
   </head>
   <body>
@@ -103,28 +106,38 @@
         <li>Everything you can create can be dragged around and deleted.</li>
         <li>Click to select things.</li>
         <li>Drag to move them.</li>
+        <li>
+          If you prefer other shortcuts, change them in
+          <code>shortcuts.js</code> (only those
+          <span class="u">underlined</span> are configurable).
+        </li>
       </ul>
-      <p><code>h</code>: show and hide this help</p>
-      <p><code>a</code>: draw an arrow</p>
-      <p><code>r</code>: draw a rectangle</p>
-      <p><code>s</code>: highlight an area</p>
-      <p><code>t</code>: write text</p>
-      <p><code>v</code>: paste images or text from the clipboard</p>
-      <p><code>k</code>: clip the screenshot</p>
-      <p><code> drag</code>: dragging moves the clipped image</p>
-      <p><code> shift+drag</code>: dragging moves the clipping rectangle</p>
+      <p><code>h</code> show and hide this help</p>
+      <p><code class="u">{arrow}</code> draw an arrow</p>
+      <p><code class="u">{rect}</code>: draw a rectangle</p>
+      <p><code class="u">{ellipse}</code> draw an ellipse</p>
+      <p><code class="u">{highlight}</code> highlight an area</p>
+      <p><code class="u">{text}</code> write text</p>
+      <p><code> ctrl .</code> Make text larger (for all future text blocks)</p>
+      <p><code> ctrl ,</code> Make text larger (for all future text blocks)</p>
       <p>
-        <code>q</code>: swap the screenshot for whatever image there is on the
-        clipboard (or go back to the screenshot)
+        <code class="u">{paste}</code> paste images or text from the clipboard
       </p>
-      <p><code>c</code>: choose color for the next operations</p>
-      <p><code> r</code>: red (default)</p>
-      <p><code> y</code>: yellow</p>
-      <p><code> b</code>: blue</p>
-      <p><code> g</code>: green</p>
-      <p><code> o</code>: orange</p>
-      <p><code> w</code>: white</p>
-      <p><code> x</code>: black (and highlight then redacts)</p>
+      <p><code class="u">{clip}</code> clip the screenshot</p>
+      <p><code> drag</code> dragging moves the clipped image</p>
+      <p><code> shift+drag</code> dragging moves the clipping rectangle</p>
+      <p>
+        <code class="u">{clipboard}</code> swap the screenshot for whatever
+        image there is on the clipboard (or go back to the screenshot)
+      </p>
+      <p><code class="u">{color}</code> choose color for the next operations</p>
+      <p><code> r</code> red (default)</p>
+      <p><code> y</code> yellow</p>
+      <p><code> b</code> blue</p>
+      <p><code> g</code> green</p>
+      <p><code> o</code> orange</p>
+      <p><code> w</code> white</p>
+      <p><code> x</code> black (and highlight then redacts)</p>
       <p><code>backspace</code>: delete anything selected</p>
     </div>
     <div id="screenshotContainer">

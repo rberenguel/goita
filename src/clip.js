@@ -71,7 +71,6 @@ class ClipPath {
     const rect = this.element.querySelector("rect"); // Get the rect within the clipPath
     const imgx = parseFloat(this.image.getAttribute("x") ?? 0);
     const imgy = parseFloat(this.image.getAttribute("y") ?? 0);
-    console.log(imgx, imgy);
     this.initialX = parseFloat(rect.getAttribute("x")) - imgx;
     this.initialY = parseFloat(rect.getAttribute("y")) - imgy;
     // TODO(me) This is not completely correct. Once we have moved the whole container (in the no-shift
@@ -165,7 +164,7 @@ class ClipPath {
       delete window._elements[this.id];
       this.svg.removeChild(this.element);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 }
