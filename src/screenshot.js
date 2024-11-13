@@ -8,11 +8,67 @@ import { ClipPath } from "./clip.js";
 
 window._elements = {};
 let kind = null;
+let screenshotFlipped = false;
+let mainScreenshot;
 const svg = document.getElementById("svgOverlay");
 const svgImage = document.createElementNS(
   "http://www.w3.org/2000/svg",
   "image",
 );
+
+function imgFromClipboard(cb) {
+  let data;
+  navigator.clipboard.read().then((clipboardItems) => {
+    for (const clipboardItem of clipboardItems) {
+      for (const type of clipboardItem.types) {
+        console.log(type);
+        if (type === "image/png") {
+          clipboardItem.getType(type).then((blob) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              const pastedImageDataUrl = e.target.result;
+              console.log(data);
+              data = pastedImageDataUrl;
+              cb(data);
+            };
+            reader.readAsDataURL(blob);
+          });
+          break;
+        }
+      }
+    }
+  });
+}
+
+const loadImage = (flipped) => (data) => {
+  console.log(flipped, data);
+  if (!data) {
+    return;
+  }
+  const img = document.createElement("img");
+  document.body.appendChild(img);
+  img.onload = () => {
+    svgImage.setAttributeNS("http://www.w3.org/1999/xlink", "href", data);
+    const dpi = window.devicePixelRatio;
+    const imgw = img.width / dpi;
+    const imgh = img.height / dpi;
+    svgImage.setAttribute("width", imgw);
+    svgImage.setAttribute("height", imgh);
+    if (flipped) {
+      const hc = (window.innerHeight / dpi - imgh) / 2;
+      const hw = (window.innerWidth / dpi - imgw) / 2;
+      svgImage.setAttribute("x", hw);
+      svgImage.setAttribute("y", hc);
+    } else {
+      svgImage.setAttribute("x", 0);
+      svgImage.setAttribute("y", 0);
+    }
+    img.parentNode.removeChild(img);
+  };
+  img.src = data;
+};
+
+const sourceLinkDiv = () => document.getElementById("sourceLink");
 
 document.addEventListener("DOMContentLoaded", () => {
   try {
@@ -26,18 +82,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ----
-
   function screenshotHandler(result) {
     const img = document.getElementById("screenshotImg");
     img.src = result.screenshot;
+    mainScreenshot = result.screenshot;
 
-    const sourceLinkDiv = document.getElementById("sourceLink");
     const linkElement = document.createElement("a");
     linkElement.href = result.url; // Set the URL
     linkElement.textContent = result.url; // Set the link text
     linkElement.target = "_blank"; // Open link in a new tab
-    sourceLinkDiv.appendChild(linkElement);
+    sourceLinkDiv().appendChild(linkElement);
 
     // Set SVG viewport after image loads
     img.onload = function () {
@@ -145,6 +199,22 @@ document.addEventListener("DOMContentLoaded", () => {
       isDrawing = false;
       if (selected) {
         selected.delete();
+      }
+    }
+    if (event.key === "q") {
+      isDrawing = false;
+      if (!screenshotFlipped) {
+        imgFromClipboard(loadImage(true));
+        try {
+          sourceLinkDiv().classList.add("hide");
+        } catch (e) {}
+        screenshotFlipped = true;
+      } else {
+        loadImage(false)(mainScreenshot);
+        try {
+          sourceLinkDiv().classList.remove("hide");
+        } catch (e) {}
+        screenshotFlipped = false;
       }
     }
     if (event.key === "Escape" && selected) {
@@ -312,7 +382,6 @@ document.addEventListener("DOMContentLoaded", () => {
         navigator.clipboard.read().then((clipboardItems) => {
           for (const clipboardItem of clipboardItems) {
             for (const type of clipboardItem.types) {
-              console.log(type);
               if (type === "image/png") {
                 clipboardItem.getType(type).then((blob) => {
                   const reader = new FileReader();
