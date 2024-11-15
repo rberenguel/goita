@@ -1,4 +1,4 @@
-export { colors };
+export { colors, SCALE_FACTOR };
 
 const colors = {
   red: (a) => `rgba(220, 20, 20, ${a})`,
@@ -8,3 +8,5 @@ const colors = {
   redact: (a) => `rgba(0, 0, 0, 1.0)`,
   white: (a) => `rgba(250, 250, 250, ${a})`,
 };
+
+const SCALE_FACTOR = 1.05;

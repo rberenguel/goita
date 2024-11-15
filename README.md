@@ -44,7 +44,9 @@ For all these, creation and deletion (click the element and press backspace) sho
 - [x] Rectangles: press `r` and drag to create.
 - [x] Arrows: press `a` and drag to create from source to destination.
 - [x] Text: press `t` and click to place.
-  - [ ] `Ctrl-.` and `Ctrl-,` increase and decrease the font for text, respectively.
+  - [x] `Ctrl-.` and `Ctrl-,` increase and decrease the font for text, respectively.
+  - [x] `Ctrl + scrollwheel` over a text block increase / decrease the size of the bounding box.
+  - [x] `Ctrl-/` Cycle through fonts (Monoid, Reforma1969, Inter, Roboto)
 - [x] Highlight: press `s` and drag to create. Use color `x` to redact. (why `s` and not `h`? Because all other shape/tool letters are on the left hand)
 - [x] Redact: Use highlighting with color "redact".
 - [x] Clip-on-drag the initial screenshot: press `k` at any time.
@@ -54,6 +56,7 @@ For all these, creation and deletion (click the element and press backspace) sho
 - [x] Paste images from the clipboard: press `v` and then click somewhere.
   - The pasted image is draggable.
   - The pasted image can be deleted by pressing backspace (like any other element after selection).
+  - `Ctrl + scrollwheel` over a pasted image resizes it.
 - [x] Paste HTML text from the clipboard: press `v` and then click somewhere.
   - The pasted text is draggable.
   - The pasted text is contenteditable.
@@ -103,3 +106,8 @@ As for contributing, this is one of my personal projects, and like many others I
 
 - Icon: Gemini via Imagen 3.
 - Gemini helped fight with Chrome permissions, but I ended up having to read (again) too much of its documentation.
+- Added the following open source fonts:
+    - [Roboto Mono](https://fonts.google.com/specimen/Roboto+Mono)
+    - [Reforma 1969](https://pampatype.com/reforma) (or from [FontSquirrel](https://www.fontsquirrel.com/fonts/reforma) to see the license)
+    - [Inter](https://rsms.me/inter/)
+    - [Monoid](https://larsenwork.com/monoid/)

@@ -1,5 +1,7 @@
 export { Image };
 
+import { SCALE_FACTOR } from "./common.js";
+
 class Image {
   constructor(x, y, dataUrl, svg) {
     this.x = x;
@@ -13,6 +15,7 @@ class Image {
     )}`;
     this.element.setAttribute("id", this.id);
     this.element.setAttribute("_kind", "image");
+    this._scale = 1;
   }
 
   is(kind) {
@@ -40,6 +43,26 @@ class Image {
     this.select();
   }
 
+  scaleUp() {
+    this._scale *= SCALE_FACTOR;
+    this.x /= SCALE_FACTOR;
+    this.y /= SCALE_FACTOR;
+    this.scale();
+  }
+
+  scaleDown() {
+    this._scale /= SCALE_FACTOR;
+    this.x *= SCALE_FACTOR;
+    this.y *= SCALE_FACTOR;
+    this.scale();
+  }
+
+  scale() {
+    this.element.style.transform = `scale(${this._scale})`;
+    this.element.setAttribute("x", this.x);
+    this.element.setAttribute("y", this.y);
+  }
+
   drag(event) {
     if (this.isSelected) {
       const bbox = this.element.getBoundingClientRect();
@@ -48,8 +71,10 @@ class Image {
       requestAnimationFrame(() => {
         const newX = event.clientX - w / 2;
         const newY = event.clientY - h / 2;
-        this.element.setAttribute("x", newX);
-        this.element.setAttribute("y", newY);
+        this.x = newX / this._scale;
+        this.y = newY / this._scale;
+        this.element.setAttribute("x", this.x);
+        this.element.setAttribute("y", this.y);
       });
     }
   }

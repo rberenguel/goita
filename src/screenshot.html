@@ -2,101 +2,8 @@
 <html>
   <head>
     <title>Goita tu</title>
-    <link
-      href="https://fonts.googleapis.com/css?family=Roboto Mono"
-      rel="stylesheet"
-    />
-    <style>
-      body {
-        border: 0;
-        margin: 0;
-        padding: 0;
-      }
-      #screenshotContainer {
-        position: relative;
-      }
-      #screenshotImg {
-        display: block;
-      }
-      svg {
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 1; /* Ensure SVG is on top */
-      }
-      .text-editor-wrapper {
-        /* Add a wrapper div */
-        font-family: "Roboto Mono";
-        font-size: 18px;
-        position: absolute;
-        z-index: 2;
-        /* Add margin to create a draggable fringe */
-        margin: 10px;
-        border-radius: 0.3em;
-        min-width: calc(5em + 10px);
-        min-height: calc(1em + 10px);
-        border: 0.5em solid transparent;
-      }
-      .text-editor-wrapper.selected {
-        border: 0.5em solid rgba(100, 100, 100, 0.3);
-      }
-      .text-editor {
-        position: absolute;
-        z-index: 2;
-        min-width: 5em;
-        padding: 5px;
-        white-space: pre-wrap;
-        overflow-wrap: break-word;
-      }
-      .text-editor:focus {
-        outline: none;
-      }
-      #sourceLink {
-        font-size: 18px;
-        position: absolute;
-        top: 3em;
-        left: 3em;
-        padding: 5px 10px;
-        background-color: rgba(50, 50, 50, 0.95);
-        border: 1px solid rgba(255, 0, 0, 0.5);
-        border-radius: 0.3em;
-        font-family: "Roboto Mono";
-        z-index: 2;
-      }
-      #sourceLink > a {
-        color: #d5a900ff;
-      }
-      #help {
-        padding: 1em;
-        position: absolute;
-        transform: translate(50%, 20vh);
-        font-family: "Roboto Mono";
-        font-size: 16px;
-        width: 50%;
-
-        border-radius: 0.3em;
-        border: 2px solid black;
-        background-color: rgba(200, 200, 200, 0.95);
-        z-index: 100;
-      }
-      #help p {
-        margin-top: 0;
-        margin-bottom: 0.3em;
-      }
-      #help code {
-        font-weight: bold;
-        white-space: pre;
-      }
-      #help.hide {
-        display: none;
-      }
-      .hide {
-        display: none;
-      }
-      .u {
-        text-decoration: underline;
-      }
-    </style>
+    <link href="../fonts/fonts.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
   </head>
   <body>
     <div id="help" class="hide">
@@ -118,11 +25,18 @@
       <p><code class="u">{ellipse}</code> draw an ellipse</p>
       <p><code class="u">{highlight}</code> highlight an area</p>
       <p><code class="u">{text}</code> write text</p>
-      <p><code> ctrl .</code> Make text larger (for all future text blocks)</p>
-      <p><code> ctrl ,</code> Make text larger (for all future text blocks)</p>
+      <p><code> ctrl .</code> Make text larger (for this text block)</p>
+      <p><code> ctrl ,</code> Make text smaller (for this text block)</p>
+      <p>
+        <code> ctrl /</code> Cycle through fonts (Monoid, Reforma, Inter,
+        Roboto)
+      </p>
+      <p><code> ctrl + scrollwheel</code> Resize the text bounding box</p>
+      <p><code> ctrl + c</code> Center the text</p>
       <p>
         <code class="u">{paste}</code> paste images or text from the clipboard
       </p>
+      <p><code> ctrl + scrollwheel</code> Resize the pasted image</p>
       <p><code class="u">{clip}</code> clip the screenshot</p>
       <p><code> drag</code> dragging moves the clipped image</p>
       <p><code> shift+drag</code> dragging moves the clipping rectangle</p>

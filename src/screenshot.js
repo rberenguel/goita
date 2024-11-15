@@ -13,7 +13,6 @@ window._elements = {}; // I leak this into window to make testing easier.
 let kind = null;
 let screenshotFlipped = false;
 let mainScreenshot;
-let fontSize = 18;
 const svg = document.getElementById("svgOverlay");
 const svgImage = document.createElementNS(
   "http://www.w3.org/2000/svg",
@@ -182,10 +181,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (kind === "empty") {
         chrome.action.setTitle({ title: "" });
         chrome.action.setBadgeText({ text: "" });
+        return;
       }
     } catch (err) {}
     try {
-      const title = kindMap[kind] ?? "";
+      const title = kindMap[kind] ?? kind.slice(0, 3);
       if (kind === "paste") {
         chrome.action.setBadgeBackgroundColor({ color: "black" });
       } else {
@@ -200,12 +200,77 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   setBadge("empty");
 
+  document.addEventListener(
+    "wheel",
+    (event) => {
+      console.log(event);
+      if (event.ctrlKey) {
+        event.stopPropagation();
+        event.preventDefault();
+        if (selected && (selected.is("image") || selected.is("text"))) {
+          if (event.deltaY > 0) {
+            selected.scaleUp();
+          }
+          if (event.deltaY < 0) {
+            selected.scaleDown();
+          }
+        }
+      }
+    },
+    {
+      passive: false, // To allow preventing the default
+    },
+  );
+
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && isDrawing) {
       isDrawing = false;
       if (selected) {
         selected.delete();
       }
+    }
+    if (event.key === "Escape" && selected) {
+      console.info(selected);
+      if (selected.is) {
+        selected.deselect();
+      } else {
+        selected.removeAttribute("filter");
+      }
+      selected = null;
+    }
+    if (event.key === "Escape" && kind === "text") {
+      return;
+    }
+    // Finding a shortcut that is reasonable for this is hard, so
+    // I'm not making it configurable.
+    if (event.key === "." && event.ctrlKey && kind === "text") {
+      // Size control needs to happen before we stop propagation
+      // and short-circuit
+      console.log("enlarge");
+      selected.fontSizeUp();
+      return;
+    }
+    if (event.key === "," && event.ctrlKey && kind === "text") {
+      // Size control needs to happen before we stop propagation
+      // and short-circuit
+      selected.fontSizeDown();
+      return;
+    }
+    if (event.key === "c" && event.ctrlKey && kind === "text") {
+      // Centering needs to happen before stopping propagation, too.
+      selected.center();
+      return;
+    }
+    if (event.key === "/" && event.ctrlKey && kind === "text") {
+      // Centering needs to happen before stopping propagation, too.
+      selected.cycleFonts();
+      setBadge(selected.fontName());
+      return;
+    }
+    if (selected && selected.is && selected.is("text") && selected.focused()) {
+      console.info("Texting, stop any propagation");
+      event.stopPropagation();
+      return;
     }
     if (event.key === "q") {
       isDrawing = false;
@@ -223,15 +288,6 @@ document.addEventListener("DOMContentLoaded", () => {
         screenshotFlipped = false;
       }
     }
-    if (event.key === "Escape" && selected) {
-      console.info(selected);
-      if (selected.is) {
-        selected.deselect();
-      } else {
-        selected.removeAttribute("filter");
-      }
-      selected = null;
-    }
     if (wants(event) == "color") {
       // Set up colors
       if (kind === "colorSettings") {
@@ -244,31 +300,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       setBadge("color");
       selected = null;
-      return;
-    }
-
-    if (event.key === "Escape" && kind === "text") {
-      return;
-    }
-    // Finding a shortcut that is reasonable for this is hard, so
-    // I'm not making it configurable.
-    if (event.key === "." && event.ctrlKey && kind === "text") {
-      // Size control needs to happen before we stop propagation
-      // and short-circuit
-      fontSize = fontSize + 2;
-      selected.size(fontSize);
-      return;
-    }
-    if (event.key === "," && event.ctrlKey && kind === "text") {
-      // Size control needs to happen before we stop propagation
-      // and short-circuit
-      fontSize = Math.max(4, fontSize - 2);
-      selected.size(fontSize);
-      return;
-    }
-    if (selected && selected.is && selected.is("text") && selected.focused()) {
-      console.info("Texting, stop any propagation");
-      event.stopPropagation();
       return;
     }
     if (kind === "colorSettings") {
@@ -485,7 +516,6 @@ document.addEventListener("DOMContentLoaded", () => {
           color,
           document.getElementById("screenshotContainer"),
           undefined,
-          fontSize,
         );
         window._elements[text.id] = text;
         selected = text;
