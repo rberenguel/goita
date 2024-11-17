@@ -41,6 +41,15 @@ class Image {
   dragInit() {
     this.isSelected = true;
     this.select();
+    this.dragOn();
+  }
+
+  dragOn() {
+    this.element.style.cursor = "grab";
+  }
+
+  dragOff() {
+    this.element.style.cursor = "";
   }
 
   scaleUp() {
@@ -114,6 +123,7 @@ class Image {
   deselect() {
     this.isSelected = false;
     this.element.removeAttribute("filter");
+    this.dragOff();
   }
 
   delete() {

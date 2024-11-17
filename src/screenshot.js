@@ -397,7 +397,11 @@ document.addEventListener("DOMContentLoaded", () => {
       kind = "text";
       event.stopPropagation();
       console.info("Creating text");
-      return;
+    }
+    if (isDrawing) {
+      document.body.style.cursor = "crosshair";
+    } else {
+      document.body.style.cursor = "";
     }
     if (event.key === "Enter" && kind === "text") {
       isAddingText = false;
@@ -708,6 +712,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.info("Stopped drawing");
       setBadge("empty");
       isDrawing = false;
+      document.body.style.cursor = "";
       if (selected.is) {
         console.info("Deselecting on mouseup while drawing");
         if (!selected.is("text")) {
@@ -716,7 +721,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     }
-
     dragging = false;
   });
 });

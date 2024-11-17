@@ -167,6 +167,15 @@ class Text {
   dragInit(clientX, clientY) {
     this.startOffsetX = clientX - this.element.offsetLeft;
     this.startOffsetY = clientY - this.element.offsetTop;
+    this.dragOn();
+  }
+
+  dragOn() {
+    this.element.style.cursor = "grab";
+  }
+
+  dragOff() {
+    this.element.style.cursor = "";
   }
 
   drag(event) {
@@ -192,7 +201,7 @@ class Text {
   deselect() {
     if (this.isSelected) {
       this.isSelected = false;
-
+      this.dragOff();
       const te = this.element.querySelector(".text-editor");
       console.info(`Deselected text: '${te.textContent}'`);
       this.element.classList.remove("selected");

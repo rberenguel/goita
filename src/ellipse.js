@@ -60,6 +60,15 @@ class Ellipse {
   dragInit(clientX, clientY) {
     this.startOffsetX = clientX - this.cx;
     this.startOffsetY = clientY - this.cy;
+    this.dragOn();
+  }
+
+  dragOn() {
+    this.element.style.cursor = "grab";
+  }
+
+  dragOff() {
+    this.element.style.cursor = "";
   }
 
   drag(event) {
@@ -79,6 +88,7 @@ class Ellipse {
   deselect() {
     this.element.removeAttribute("filter");
     this.isSelected = false;
+    this.dragOff();
   }
 
   delete() {

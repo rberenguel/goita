@@ -61,6 +61,15 @@ class Arrow {
     this.startOffsetY = clientY - startY;
     this.endOffsetX = clientX - endX;
     this.endOffsetY = clientY - endY;
+    this.dragOn();
+  }
+
+  dragOn() {
+    this.element.style.cursor = "grab";
+  }
+
+  dragOff() {
+    this.element.style.cursor = "";
   }
 
   drag(event) {
@@ -87,6 +96,7 @@ class Arrow {
 
   deselect() {
     this.element.removeAttribute("filter");
+    this.dragOff();
     // Arrows of very small length will be autodeleted.
     // Same will happen with any element, to be fair.
     if (this._length() < 10) {

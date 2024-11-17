@@ -69,6 +69,15 @@ class Rect {
   dragInit(clientX, clientY) {
     this.startOffsetX = clientX - this.x;
     this.startOffsetY = clientY - this.y;
+    this.dragOn();
+  }
+
+  dragOn() {
+    this.element.style.cursor = "grab";
+  }
+
+  dragOff() {
+    this.element.style.cursor = "";
   }
 
   drag(event) {
@@ -88,6 +97,7 @@ class Rect {
   deselect() {
     this.element.removeAttribute("filter");
     this.isSelected = false;
+    this.dragOff();
   }
 
   delete() {

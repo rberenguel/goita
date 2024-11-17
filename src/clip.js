@@ -64,6 +64,14 @@ class ClipPath {
     this.image.setAttribute("clip-path", `url(#${this.id})`);
   }
 
+  dragOn() {
+    this.image.style.cursor = "grab";
+  }
+
+  dragOff() {
+    this.image.style.cursor = "";
+  }
+
   dragInit(clientX, clientY) {
     this.isSelected = true;
     this.select();
@@ -117,8 +125,10 @@ class ClipPath {
     this.isSelected = false;
     this.deselect();
   }
+
   select() {
     this.isSelected = true;
+    this.dragOn(); // TODO(me) This is the right place
     if (this.highlightRect) {
       return;
     }
@@ -127,6 +137,7 @@ class ClipPath {
       "http://www.w3.org/2000/svg",
       "rect",
     );
+
     const rect = this.element.querySelector("rect");
     this.highlightRect.setAttribute("x", rect.getAttribute("x"));
     this.highlightRect.setAttribute("y", rect.getAttribute("y"));
@@ -141,7 +152,7 @@ class ClipPath {
 
   deselect() {
     this.isSelected = false;
-
+    this.dragOff();
     // Remove the highlight rect
     if (this.highlightRect) {
       this.svg.removeChild(this.highlightRect);

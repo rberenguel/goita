@@ -107,7 +107,7 @@ As for contributing, this is one of my personal projects, and like many others I
 - Icon: Gemini via Imagen 3.
 - Gemini helped fight with Chrome permissions, but I ended up having to read (again) too much of its documentation.
 - Added the following open source fonts:
-    - [Roboto Mono](https://fonts.google.com/specimen/Roboto+Mono)
-    - [Reforma 1969](https://pampatype.com/reforma) (or from [FontSquirrel](https://www.fontsquirrel.com/fonts/reforma) to see the license)
-    - [Inter](https://rsms.me/inter/)
-    - [Monoid](https://larsenwork.com/monoid/)
+  - [Roboto Mono](https://fonts.google.com/specimen/Roboto+Mono)
+  - [Reforma 1969](https://pampatype.com/reforma) (or from [FontSquirrel](https://www.fontsquirrel.com/fonts/reforma) to see the license)
+  - [Inter](https://rsms.me/inter/)
+  - [Monoid](https://larsenwork.com/monoid/)
