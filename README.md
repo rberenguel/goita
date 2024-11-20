@@ -11,6 +11,8 @@
 
 An extension to take and annotate screenshots.
 
+It can also be used in a standalone way by visiting https://www.mostlymaths.net/goita/ To annotate an image you have in your clipboard, press `q`, otherwise you can paste pieces of images using `v` [NOTE: this is broken in Safari due to some clipboard permission issue]. Depending on the browser you may need to click "paste", or accept some clipboard access permissions. All images and text are processed locally, no data is sent anywhere.
+
 ## Demo video
 
 Click the image to open the video (youtube). If you don't want to do that, you can find the video in `media/goita-demo-v09.mov`.
