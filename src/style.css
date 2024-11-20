@@ -14,6 +14,7 @@ svg {
   top: 0;
   left: 0;
   z-index: 1; /* Ensure SVG is on top */
+  border: 1px solid black; /* To help see it when opening as webpage */
 }
 .text-editor-wrapper {
   /* Add a wrapper div */

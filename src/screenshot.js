@@ -1,3 +1,5 @@
+export { setupAllTheThings };
+
 import { colors } from "./common.js";
 
 import { Arrow } from "./arrow.js";
@@ -74,7 +76,7 @@ const loadImage = (flipped) => (data) => {
 
 const sourceLinkDiv = () => document.getElementById("sourceLink");
 
-document.addEventListener("DOMContentLoaded", () => {
+const setupAllTheThings = (testImage) => () => {
   try {
     chrome.storage.local.set({ linkback: true });
     chrome.storage.local.get(["screenshot", "url"], screenshotHandler);
@@ -82,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Let's assume we are in test mode. testImage then exists by global import
     screenshotHandler({
       screenshot: testImage,
-      url: "https://mostlymaths.net/sketches",
+      url: "https://mostlymaths.net/goita/",
     });
   }
 
@@ -121,9 +123,9 @@ document.addEventListener("DOMContentLoaded", () => {
       );
       filter.setAttribute("id", "drop-shadow");
       filter.innerHTML = `
-      <!--<feDropShadow dx="3" dy="3" stdDeviation="3" flood-color="rgba(50, 50, 50, 0.7)" />-->
-      <feDropShadow dx="-3" dy="-3" stdDeviation="3" flood-color="rgba(200, 200, 200, 0.7)" />
-    `;
+        <!--<feDropShadow dx="3" dy="3" stdDeviation="3" flood-color="rgba(50, 50, 50, 0.7)" />-->
+        <feDropShadow dx="-3" dy="-3" stdDeviation="3" flood-color="rgba(200, 200, 200, 0.7)" />
+      `;
       // Just to make sure it is always on top, for tests
 
       const defs = document.createElementNS(
@@ -307,6 +309,10 @@ document.addEventListener("DOMContentLoaded", () => {
         colorName = "red";
         color = colors["red"];
       }
+      if (event.key === "o") {
+        colorName = "orange";
+        color = colors["orange"];
+      }
       if (event.key === "y") {
         colorName = "yellow";
         color = colors["yellow"];
@@ -327,6 +333,13 @@ document.addEventListener("DOMContentLoaded", () => {
         colorName = "white";
         color = colors["white"];
       }
+      /*
+        TODO(me) Next feature
+        if(event.key === "s"){
+          colors["solid"]();
+          console.info("Setting alpha to solid")
+          return;
+        }*/
       kind = null;
       setBadge("empty");
     }
@@ -723,4 +736,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     dragging = false;
   });
-});
+};

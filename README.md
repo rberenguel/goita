@@ -62,7 +62,7 @@ For all these, creation and deletion (click the element and press backspace) sho
   - The pasted text is contenteditable.
   - The pasted image can be deleted by pressing backspace (like any other element after selection).
   - [x] Handle `text/plain`
-- [x] Circles/ellipses: press `w` and drag, like a rectangle
+- [x] Circles/ellipses: press `p` and drag, like a rectangle
 - [x] The current mode and color (when drawing) is showed in the extension badge. Make sure to pin it.
 - [x] Control font size for text (it is fixed and the same for all blocks)
 - [x] Most shortcuts are quickly customizable in a single file (`shortcuts.js`)

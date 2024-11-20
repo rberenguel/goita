@@ -6,7 +6,7 @@ const shortcuts = {
   t: "text",
   a: "arrow",
   v: "paste",
-  w: "ellipse",
+  p: "ellipse",
   q: "clipboard",
   k: "clip",
   c: "color",
