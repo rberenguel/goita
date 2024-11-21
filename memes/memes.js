@@ -31,12 +31,32 @@ const memes = [
   {
     title: "Ralph (Chuckles): I'm in Danger",
     file: "ralph-danger.jpg",
-    keywords: ["chuckle in danger", "ralph",  "simpsons"],
+    keywords: ["ralph chuckle in danger", "ralph",  "simpsons"],
   },
   {
     title: "Worst Day So Far",
     file: "so-far.jpg",
-    keywords: ["bart", "homer", "so far", "worst", "simpsons"],
+    keywords: ["bart", "homer", "worst day so far", "worst", "simpsons"],
+  },
+  {
+    title: "Say It Bart",
+    file: "say-it-bart.jpg",
+    keywords: ["bart", "say it bart", "simpsons"],
+  },
+  {
+    title: "One of Us",
+    file: "one-of-us.jpg",
+    keywords: ["homer", "bart", "lisa", "one of us", "simpsons"],
+  },
+  {
+    title: "Lisa Presenting",
+    file: "lisa-present.jpg",
+    keywords: ["presentation", "lisa presenting", "hard truths", "hard to swallow"],
+  },
+  {
+    title: "Moe Kicking Out Barney",
+    file: "kick-barney.jpg",
+    keywords: ["Moe", "Barney", "kick", "back", "simpsons"],
   },
   {
     title: "Inanimated Carbon Rod",
