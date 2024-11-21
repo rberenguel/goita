@@ -1,4 +1,4 @@
-import { SCALE_FACTOR } from "./common.js";
+import { SCALE_FACTOR, toTop } from "./common.js";
 
 export { Text };
 
@@ -196,6 +196,7 @@ class Text {
   select() {
     this.isSelected = true;
     this.element.classList.add("selected");
+    toTop(this.element);
   }
 
   deselect() {

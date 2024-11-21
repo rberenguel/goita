@@ -1,6 +1,6 @@
 export { Image };
 
-import { SCALE_FACTOR } from "./common.js";
+import { SCALE_FACTOR, toTop } from "./common.js";
 
 class Image {
   constructor(x, y, dataUrl, svg) {
@@ -35,6 +35,18 @@ class Image {
     pastedImage.setAttribute("x", this.x);
     pastedImage.setAttribute("y", this.y);
     this.svg.appendChild(pastedImage);
+    pastedImage.addEventListener("load", () => {
+      console.log("loaded");
+
+      const bbox = pastedImage.getBBox();
+      const w = bbox.width;
+      const h = bbox.height;
+      console.log(w, h);
+      this.x = this.x - w / 2;
+      this.y = this.y - h / 2;
+      pastedImage.setAttribute("x", this.x);
+      pastedImage.setAttribute("y", this.y);
+    });
     return pastedImage;
   }
 
@@ -51,6 +63,8 @@ class Image {
   dragOff() {
     this.element.style.cursor = "";
   }
+
+  updateShape(ev) {}
 
   scaleUp() {
     this._scale *= SCALE_FACTOR;
@@ -117,6 +131,8 @@ class Image {
         shadowRect.setAttribute("filter", "url(#drop-shadow)");
         this.svg.insertBefore(shadowRect, this.element);
       }
+    } else {
+      toTop(this.element);
     }
   }
 

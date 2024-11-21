@@ -1,4 +1,4 @@
-import { colors } from "./common.js";
+import { colors, toTop } from "./common.js";
 
 export { Ellipse };
 
@@ -83,6 +83,7 @@ class Ellipse {
   select() {
     this.element.setAttribute("filter", "url(#drop-shadow)");
     this.isSelected = true;
+    toTop(this.element);
   }
 
   deselect() {

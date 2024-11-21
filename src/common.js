@@ -1,4 +1,4 @@
-export { colors, SCALE_FACTOR };
+export { colors, toTop, SCALE_FACTOR };
 
 const colors = {
   red: (a) => `rgba(220, 20, 20, ${a})`,
@@ -11,3 +11,8 @@ const colors = {
 };
 
 const SCALE_FACTOR = 1.05;
+
+const toTop = (elt) => {
+  const parent = elt.parentNode;
+  parent.appendChild(elt);
+};

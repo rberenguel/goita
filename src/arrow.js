@@ -1,6 +1,6 @@
 export { Arrow };
 
-import { colors } from "./common.js";
+import { colors, toTop } from "./common.js";
 
 class Arrow {
   constructor(x1, y1, colorName, svg) {
@@ -92,6 +92,7 @@ class Arrow {
   select() {
     this.isSelected = true;
     this.element.setAttribute("filter", "url(#drop-shadow)");
+    toTop(this.element);
   }
 
   deselect() {

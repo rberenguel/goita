@@ -1,4 +1,4 @@
-import { colors } from "./common.js";
+import { colors, toTop } from "./common.js";
 
 export { Rect };
 
@@ -92,6 +92,7 @@ class Rect {
   select() {
     this.element.setAttribute("filter", "url(#drop-shadow)");
     this.isSelected = true;
+    toTop(this.element);
   }
 
   deselect() {

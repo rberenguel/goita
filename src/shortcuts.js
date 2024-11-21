@@ -8,6 +8,8 @@ const shortcuts = {
   v: "paste",
   p: "ellipse",
   q: "clipboard",
+  m: "memes",
   k: "clip",
   c: "color",
+  z: "empty",
 };

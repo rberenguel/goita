@@ -1,7 +1,7 @@
 export { setupAllTheThings };
 
 import { colors } from "./common.js";
-
+import { white } from "./white.js";
 import { Arrow } from "./arrow.js";
 import { Rect } from "./rect.js";
 import { Ellipse } from "./ellipse.js";
@@ -10,10 +10,14 @@ import { Image } from "./image.js";
 import { ClipPath } from "./clip.js";
 import { shortcuts } from "./shortcuts.js";
 
+import { filterMemes } from "../memes/memes.js";
+
 window._elements = {}; // I leak this into window to make testing easier.
 
 let kind = null;
+let searchText = "";
 let screenshotFlipped = false;
+let lastClick = undefined;
 let mainScreenshot;
 const svg = document.getElementById("svgOverlay");
 const svgImage = document.createElementNS(
@@ -175,6 +179,7 @@ const setupAllTheThings = (testImage) => () => {
       rect: "▭",
       ellipse: "⬭",
       highlight: "░",
+      memes: "( ͡° ͜ʖ ͡°)",
       text: "|",
       paste: "↧",
       color: "c?",
@@ -188,7 +193,7 @@ const setupAllTheThings = (testImage) => () => {
     } catch (err) {}
     try {
       const title = kindMap[kind] ?? kind.slice(0, 3);
-      if (kind === "paste") {
+      if (kind === "paste" || kind === "memes") {
         chrome.action.setBadgeBackgroundColor({ color: "black" });
       } else {
         chrome.action.setBadgeBackgroundColor({ color: colors[colorName](1) });
@@ -243,6 +248,50 @@ const setupAllTheThings = (testImage) => () => {
     if (event.key === "Escape" && kind === "text") {
       return;
     }
+    if (kind === "memes") {
+      const filterText = document.getElementById("filter-text");
+      const filteredMemes = document.getElementById("filtered-memes");
+      if (event.key === "Backspace") {
+        searchText = searchText.slice(0, -1);
+        filterMemes(searchText);
+      } else if (event.key === "Escape") {
+        kind = null;
+        searchText = "";
+        filterText.style.display = "none";
+        filteredMemes.style.display = "none";
+        setBadge("empty");
+        return;
+      } else if (event.key === "Enter") {
+        const meme = filteredMemes.querySelector("p");
+        if (meme) {
+          let x = 0,
+            y = 0;
+          if (lastClick) {
+            x = lastClick.offsetX;
+            y = lastClick.offsetY;
+          }
+          const pastedMeme = new Image(
+            x,
+            y,
+            "../memes/" + meme.dataset["file"],
+            svg,
+          );
+          kind = null;
+          searchText = "";
+          filterText.style.display = "none";
+          filteredMemes.style.display = "none";
+          setBadge("empty");
+          window._elements[pastedMeme.id] = pastedMeme;
+          selected = pastedMeme;
+          return;
+        }
+      } else if (event.key.length === 1) {
+        searchText += event.key;
+        console.log(searchText);
+        filterMemes(searchText);
+      }
+      return;
+    }
     // Finding a shortcut that is reasonable for this is hard, so
     // I'm not making it configurable.
     if (event.key === "." && event.ctrlKey && kind === "text") {
@@ -274,7 +323,7 @@ const setupAllTheThings = (testImage) => () => {
       event.stopPropagation();
       return;
     }
-    if (event.key === "q") {
+    if (wants(event) === "clipboard" && kind !== "memes") {
       isDrawing = false;
       if (!screenshotFlipped) {
         imgFromClipboard(loadImage(true));
@@ -282,6 +331,23 @@ const setupAllTheThings = (testImage) => () => {
           sourceLinkDiv().classList.add("hide");
         } catch (e) {}
         screenshotFlipped = true;
+      } else {
+        loadImage(false)(mainScreenshot);
+        try {
+          sourceLinkDiv().classList.remove("hide");
+        } catch (e) {}
+        screenshotFlipped = false;
+      }
+    }
+    if (wants(event) === "empty") {
+      // This should only work when going back to a screenshot.
+      isDrawing = false;
+      if (!screenshotFlipped) {
+        try {
+          sourceLinkDiv().classList.add("hide");
+        } catch (e) {}
+        screenshotFlipped = true;
+        loadImage(false)(white);
       } else {
         loadImage(false)(mainScreenshot);
         try {
@@ -411,6 +477,14 @@ const setupAllTheThings = (testImage) => () => {
       event.stopPropagation();
       console.info("Creating text");
     }
+    if (wants(event) == "memes") {
+      setBadge("memes");
+      isDrawing = true;
+      kind = "memes";
+      event.stopPropagation();
+      console.info("Starting text filtering");
+      return;
+    }
     if (isDrawing) {
       document.body.style.cursor = "crosshair";
     } else {
@@ -446,6 +520,7 @@ const setupAllTheThings = (testImage) => () => {
     if (event.button != 0) {
       return;
     }
+    lastClick = event;
     if (selected && selected.is) {
       selected.deselect();
     }

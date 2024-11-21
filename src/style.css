@@ -107,3 +107,33 @@ svg {
 .u {
   text-decoration: underline;
 }
+
+#filter-text {
+  position: fixed;
+  font-family: "Monoid";
+  top: 75vh;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 30px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: 1001;
+  display: none;
+}
+
+#filtered-memes {
+  position: fixed;
+  font-family: "Monoid";
+  top: 25vh;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 30px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: 1001;
+  display: none;
+}
