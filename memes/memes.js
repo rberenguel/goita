@@ -14,6 +14,11 @@ const memes = [
     keywords: ["distracted", "boyfriend", "girlfriend", "cheating"],
   },
   {
+    title: "'Smarts': Think about it",
+    file: "smarts.jpg",
+    keywords: ["smarts", "think"],
+  },
+  {
     title: "Shut up and take my money",
     file: "shut-up-and-take-my-money.jpg",
     keywords: ["Fry", "Futurama", "Money", "Shut up"],
@@ -124,6 +129,11 @@ const memes = [
       "reaction",
       "castle",
     ],
+  },
+  {
+    title: "Boardroom Meeting Suggestion",
+    file: "boardroom-suggestion.jpg",
+    keywords: ["boardroom meeting", "suggestion", "distracted", "office"]
   },
 ];
 
