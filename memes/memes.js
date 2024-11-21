@@ -14,6 +14,46 @@ const memes = [
     keywords: ["distracted", "boyfriend", "girlfriend", "cheating"],
   },
   {
+    title: "Confused Travolta",
+    file: "confused-travolta.jpg",
+    keywords: ["confused", "travolta", "pulp fiction"],
+  },
+  {
+    title: "Homer Terminator",
+    file: "homer-terminator.jpg",
+    keywords: ["terminator", "homer", "rod tod", "simpsons"],
+  },
+  {
+    title: "Ralph: Go Banana",
+    file: "go-banana.jpg",
+    keywords: ["go banana", "ralph",  "simpsons"],
+  },
+  {
+    title: "Ralph (Chuckles): I'm in Danger",
+    file: "ralph-danger.jpg",
+    keywords: ["chuckle in danger", "ralph",  "simpsons"],
+  },
+  {
+    title: "Worst Day So Far",
+    file: "so-far.jpg",
+    keywords: ["bart", "homer", "so far", "worst", "simpsons"],
+  },
+  {
+    title: "Inanimated Carbon Rod",
+    file: "carbon-rod.jpg",
+    keywords: ["homer", "simpsons", "carbon", "rod inanimated"],
+  },
+  {
+    title: "Pingu toot",
+    file: "pingu-toot.jpg",
+    keywords: ["pingu", "toot", "annoyed", "scream"],
+  },
+  {
+    title: "Pingu don't want to",
+    file: "pingu-dont-want-to.jpg",
+    keywords: ["pingu", "don't", "want", "now"],
+  },
+  {
     title: "'Smarts': Think about it",
     file: "smarts.jpg",
     keywords: ["smarts", "think"],
