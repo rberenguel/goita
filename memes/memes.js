@@ -34,6 +34,16 @@ const memes = [
     keywords: ["ralph chuckle in danger", "ralph",  "simpsons"],
   },
   {
+    title: "Skinner Out of Touch",
+    file: "skinner-idea.jpg",
+    keywords: ["principal skinner out of touch", "simpsons"],
+  },
+  {
+    title: "Skinner Steamed Hams",
+    file: "steamed-hams.jpg",
+    keywords: ["principal skinner steamed hams", "simpsons", "aurora borealis"],
+  },
+  {
     title: "Worst Day So Far",
     file: "so-far.jpg",
     keywords: ["bart", "homer", "worst day so far", "worst", "simpsons"],
