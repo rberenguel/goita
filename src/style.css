@@ -110,7 +110,7 @@ svg {
 #filter-text {
   position: fixed;
   font-family: "Monoid";
-  top: 75vh;
+  top: 0.5rem;
   left: 50%;
   transform: translateX(-50%);
   font-size: 30px;
@@ -124,10 +124,11 @@ svg {
 
 #filtered-memes {
   position: fixed;
+  width: 40%;
   font-family: "Monoid";
-  top: 25vh;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 5rem;
+  left: 80%;
+  transform: translateX(calc(-65% + 1em));
   font-size: 30px;
   color: white;
   background-color: rgba(0, 0, 0, 0.7);
@@ -135,4 +136,44 @@ svg {
   border-radius: 5px;
   z-index: 1001;
   display: none;
+  backdrop-filter: blur(5px);
+}
+
+#filtered-memes > p {
+  margin-block-start: 0.2em;
+  margin-block-end: 0.2em;
+}
+
+#meme-container {
+  top: 5rem;
+  display: grid;
+  width: 48.2em;
+  margin-left: 10%;
+  position: absolute;
+  z-index: 1000;
+  grid-template-columns: repeat(auto-fit, minmax(10em, 1fr));
+  gap: 0em;
+  padding: 1em;
+  background-color: #99999999;
+  border-radius: 5px;
+  backdrop-filter: blur(5px);
+}
+
+#meme-container > div {
+  padding: 0em;
+}
+
+.meme-img[data-title]:hover::after {
+  font-family: Monoid;
+  font-size: 80%;
+  content: attr(data-title);
+  top: 0;
+  display: block;
+  position: absolute;
+  background-color: #333;
+  color: white;
+  padding: 0.5em;
+  border-radius: 0.5em;
+  z-index: 100000;
+  white-space: pre;
 }

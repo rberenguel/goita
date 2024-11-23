@@ -1,13 +1,11 @@
-export { filterMemes };
-
-const notSureIf = {
-  title: "Fry Not Sure",
-  file: "not-sure-if-fry.jpg",
-  keywords: ["Futurama", "Fry", "Not sure", "Not sure if"],
-};
+export { filterMemes, displayMemes };
 
 const memes = [
-  notSureIf,
+  {
+    title: "Fry Not Sure",
+    file: "not-sure-if-fry.jpg",
+    keywords: ["Futurama", "Fry", "Not sure", "Not sure if"],
+  },
   {
     title: "Distracted Boyfriend Meme",
     file: "distracted-boyfriend.jpg",
@@ -200,7 +198,7 @@ const memes = [
   {
     title: "Batman Thinking",
     file: "batman-thinking.jpg",
-    keywords: ["batman", "thinking", "comic"],
+    keywords: ["Batman Thinking", "batman", "thinking", "comic"],
   },
   {
     title: "Bender Casino in the Moon",
@@ -255,16 +253,173 @@ const memes = [
     ],
   },
   {
+    title: "Ancient aliens, you know",
+    file: "ancient-aliens.jpg",
+    keywords: ["Ancient aliens, you know", "conspiracy"],
+  },
+  {
+    title: "Left Exit 12 Off Ramp",
+    file: "left-exit-12.jpg",
+    keywords: ["left exit 12 off ramp", "change of mind"],
+  },
+  {
     title: "Boardroom Meeting Suggestion",
     file: "boardroom-suggestion.jpg",
     keywords: ["boardroom meeting", "suggestion", "distracted", "office"],
+  },
+  {
+    title: "Change My Mind",
+    file: "change-my-mind.jpg",
+    keywords: ["change my mind", "change"],
+  },
+  {
+    title: "Spice Adams Hiding Behind Tree",
+    file: "spice-adams.jpg",
+    keywords: ["spice adams hiding behind tree", "rubbing hands"],
+  },
+  {
+    title: "Raccoon Praising the Gods",
+    file: "raccoon-praise.jpg",
+    keywords: ["Raccoon Praising the Gods", "praying", "begging", "sorry"],
+  },
+  {
+    title: "Raccoon Painting or Planning",
+    file: "raccoon-plan.jpg",
+    keywords: ["Raccoon Painting or Planning", "plan", "plot"],
+  },
+  {
+    title: "Nothing to See Here",
+    file: "nothing-to-see-here.jpg",
+    keywords: [
+      "Nothing to See Here",
+      "leslie nielsen",
+      "naked gun",
+      "move along",
+    ],
+  },
+
+  {
+    title: "Make It So",
+    file: "make-it-so.jpg",
+    keywords: [
+      "Make It So",
+      "jean-luc picard",
+      "star trek",
+      "command",
+      "order",
+    ],
+  },
+
+  {
+    title: "Khaaan!",
+    file: "khaaan.jpg",
+    keywords: [
+      "Khaaan!",
+      "william shatner",
+      "star trek",
+      "khan",
+      "yelling",
+      "anger",
+    ],
+  },
+
+  {
+    title: "Always Has Been",
+    file: "always-been.jpg",
+    keywords: [
+      "Always Has Been",
+      "astronaut",
+      "space",
+      "earth",
+      "always has been",
+      "meme",
+    ],
+  },
+  {
+    title: "Calvin and Hobbes Thought Police",
+    file: "thought-police.jpg",
+    keywords: [
+      "Calvin and Hobbes Thought Police",
+      "Calvin and Hobbes",
+      "thought police",
+      "censorship",
+      "control",
+    ],
+  },
+  {
+    title: "Welcome to Science Hell",
+    file: "tom-gauld-science-hell.jpg",
+    keywords: [
+      "Welcome to Science Hell",
+      "Tom Gauld",
+      "science",
+      "hell",
+      "scientists",
+      "experiment",
+      "punishment",
+      "cartoon",
+      "New Scientist",
+    ],
+  },
+  {
+    title: "Hank Scorpio Hammocks",
+    file: "hammocks.jpg",
+    keywords: [
+      "Hank Scorpio Hammocks",
+      "Hank Scorpio",
+      "The Simpsons",
+      "hammock",
+      "office",
+      "villain",
+      "supervillain",
+      "globex",
+    ],
+  },
+
+  {
+    title: "Hank Scorpio Kill It With Fire",
+    file: "kill-it-with-fire.jpg",
+    keywords: [
+      "Hank Scorpio Kill It With Fire",
+      "Hank Scorpio",
+      "The Simpsons",
+      "kill it with fire",
+      "flamethrower",
+      "villain",
+      "supervillain",
+      "globex",
+    ],
+  },
+  {
+    title: "Phineas: I Know What We're Gonna Do Today",
+    file: "do-today.jpg",
+    keywords: [
+      "Phineas: I Know What We're Gonna Do Today",
+      "Phineas and Ferb",
+      "Phineas",
+      "Ferb",
+      "summer",
+      "adventure",
+      "invention",
+      "Candace",
+    ],
+  },
+  {
+    title: "Oh no: I will do these things today",
+    file: "to-do-webcomicname-dot-com.jpg",
+    keywords: [
+      "Oh no: I will do these things today",
+      "todo",
+      "priority",
+      "webcomicname",
+    ],
   },
 ];
 
 const filterTextElement = document.getElementById("filter-text");
 const filteredMemesElement = document.getElementById("filtered-memes");
 
-function filterMemes(text) {
+function filterMemes(text, settings = {}) {
   const lowerCaseText = text.toLowerCase();
 
   const filteredMemes = memes.filter((meme) => {
@@ -282,11 +437,55 @@ function filterMemes(text) {
   }
   filteredMemesElement.innerHTML = "";
   filteredMemesElement.style.display = "none";
+  if (settings.display) {
+    displayMemes(filteredMemes, settings);
+  }
   filteredMemes.forEach((meme) => {
     const p = document.createElement("p");
     p.textContent = meme.title;
+    p.style.cursor = "pointer";
     p.dataset.file = meme.file;
+    p.addEventListener("click", settings.callback("../memes/" + meme.file));
     filteredMemesElement.appendChild(p);
     filteredMemesElement.style.display = "block";
   });
+}
+
+function displayMemes(memes, settings) {
+  console.log(memes);
+  const container = document.getElementById("meme-container");
+
+  if (container) {
+    container.remove(); // Remove the existing container if it exists
+  }
+
+  const newContainer = document.createElement("div");
+  newContainer.id = "meme-container";
+
+  memes.forEach((meme) => {
+    const memeDiv = document.createElement("div");
+    memeDiv.style.border = "1px solid #ccc";
+    memeDiv.style.overflow = "hidden"; // Hide any content that overflows
+    memeDiv.style.position = "relative";
+    const img = document.createElement("img");
+    img.src = "../memes/" + meme.file;
+    img.alt = meme.title;
+    img.style.width = "100%";
+    img.style.height = "100%";
+    img.style.objectFit = "cover"; // This is key for square trimming
+
+    memeDiv.appendChild(img);
+    memeDiv.dataset["title"] = meme.title;
+    memeDiv.classList.add("meme-img");
+    memeDiv.style.width = "12em"; // Set a fixed width
+    memeDiv.style.height = "12em"; // Set the same height for a square
+    memeDiv.addEventListener(
+      "click",
+      settings.callback("../memes/" + meme.file),
+    );
+    newContainer.appendChild(memeDiv);
+  });
+
+  const existingContent = document.body.firstChild;
+  document.body.insertBefore(newContainer, existingContent);
 }

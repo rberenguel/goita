@@ -18,6 +18,7 @@ let kind = null;
 let searchText = "";
 let screenshotFlipped = false;
 let lastClick = undefined;
+let displayMemes = false;
 let mainScreenshot;
 const svg = document.getElementById("svgOverlay");
 const svgImage = document.createElementNS(
@@ -253,44 +254,74 @@ const setupAllTheThings = (testImage) => () => {
       const filteredMemes = document.getElementById("filtered-memes");
       event.stopPropagation();
       event.preventDefault();
+      const currentClick = lastClick;
+      const memeCallback = (memePath) => () => {
+        const container = document.getElementById("meme-container");
+
+        if (container) {
+          container.remove();
+        }
+        let x = 0,
+          y = 0;
+        if (currentClick) {
+          x = currentClick.offsetX;
+          y = currentClick.offsetY;
+        }
+        const pastedMeme = new Image(x, y, "../memes/" + memePath, svg);
+        kind = null;
+        searchText = "";
+        filterText.style.display = "none";
+        filteredMemes.style.display = "none";
+        setBadge("empty");
+        window._elements[pastedMeme.id] = pastedMeme;
+        selected = pastedMeme;
+        displayMemes = false;
+      };
+      if (event.metaKey) {
+        return;
+      }
       if (event.key === "Backspace") {
         searchText = searchText.slice(0, -1);
-        filterMemes(searchText);
+        filterMemes(searchText, {
+          display: displayMemes,
+          callback: memeCallback,
+        });
+      } else if (event.key === "Control" || event.key === "Tab") {
+        displayMemes = !displayMemes;
+        filterMemes(searchText, {
+          display: displayMemes,
+          callback: memeCallback,
+        });
       } else if (event.key === "Escape") {
         kind = null;
         searchText = "";
         filterText.style.display = "none";
         filteredMemes.style.display = "none";
         setBadge("empty");
+        const container = document.getElementById("meme-container");
+
+        if (container) {
+          container.remove();
+        }
         return;
       } else if (event.key === "Enter") {
+        const container = document.getElementById("meme-container");
+
+        if (container) {
+          container.remove();
+        }
         const meme = filteredMemes.querySelector("p");
         if (meme) {
-          let x = 0,
-            y = 0;
-          if (lastClick) {
-            x = lastClick.offsetX;
-            y = lastClick.offsetY;
-          }
-          const pastedMeme = new Image(
-            x,
-            y,
-            "../memes/" + meme.dataset["file"],
-            svg,
-          );
-          kind = null;
-          searchText = "";
-          filterText.style.display = "none";
-          filteredMemes.style.display = "none";
-          setBadge("empty");
-          window._elements[pastedMeme.id] = pastedMeme;
-          selected = pastedMeme;
+          memeCallback(meme.dataset["file"])();
           return;
         }
       } else if (event.key.length === 1) {
         searchText += event.key;
         console.log(searchText);
-        filterMemes(searchText);
+        filterMemes(searchText, {
+          display: displayMemes,
+          callback: memeCallback,
+        });
       }
       return;
     }
