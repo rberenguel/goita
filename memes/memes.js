@@ -26,12 +26,12 @@ const memes = [
   {
     title: "Ralph: Go Banana",
     file: "go-banana.jpg",
-    keywords: ["go banana", "ralph",  "simpsons"],
+    keywords: ["go banana", "ralph", "simpsons"],
   },
   {
     title: "Ralph (Chuckles): I'm in Danger",
     file: "ralph-danger.jpg",
-    keywords: ["ralph chuckle in danger", "ralph",  "simpsons"],
+    keywords: ["ralph chuckle in danger", "ralph", "simpsons"],
   },
   {
     title: "Skinner Out of Touch",
@@ -42,6 +42,55 @@ const memes = [
     title: "Skinner Steamed Hams",
     file: "steamed-hams.jpg",
     keywords: ["principal skinner steamed hams", "simpsons", "aurora borealis"],
+  },
+  {
+    title: "(Chief Wiggum) Wink, wink",
+    file: "wink-wink.jpg",
+    keywords: ["(Chief Wiggum) Wink, wink", "simpsons", "wiggum"],
+  },
+  {
+    title: "Chief Wiggum: invisible typewriter",
+    file: "invisible-typewriter.jpg",
+    keywords: ["Chief Wiggum: invisible typewriter", "simpsons", "wiggum"],
+  },
+  {
+    title: "Old Man Yells",
+    file: "old-man-yells.jpg",
+    keywords: ["old man yells", "simpsons", "cloud"],
+  },
+  {
+    title: "Stop! He's already dead",
+    file: "stop-already.jpg",
+    keywords: ["stop he's already dead", "simpsons", "kicking"],
+  },
+  {
+    title: "Pepe Silvia",
+    file: "pepe-silvia.jpg",
+    keywords: [
+      "pepe silvia",
+      "it's always sunny in philadelphia",
+      "conspiracy",
+    ],
+  },
+  {
+    title: "Cadaver? Qué cadaver?",
+    file: "cadaver.jpg",
+    keywords: ["cadaver", "bricomania"],
+  },
+  {
+    title: "Flex Tape Fix",
+    file: "flex-tape.jpg",
+    keywords: ["fix a leak", "duct tape", "fix leaking water tank"],
+  },
+  {
+    title: "PTSD Dog",
+    file: "ptsdog.jpg",
+    keywords: ["PTSD dog", "vietnam", "muffins"],
+  },
+  {
+    title: "Side Eye Monkey",
+    file: "side-eye-monkey.jpg",
+    keywords: ["side eye monkey"],
   },
   {
     title: "Worst Day So Far",
@@ -61,7 +110,12 @@ const memes = [
   {
     title: "Lisa Presenting",
     file: "lisa-present.jpg",
-    keywords: ["presentation", "lisa presenting", "hard truths", "hard to swallow"],
+    keywords: [
+      "presentation",
+      "lisa presenting",
+      "hard truths",
+      "hard to swallow",
+    ],
   },
   {
     title: "Moe Kicking Out Barney",
@@ -203,7 +257,7 @@ const memes = [
   {
     title: "Boardroom Meeting Suggestion",
     file: "boardroom-suggestion.jpg",
-    keywords: ["boardroom meeting", "suggestion", "distracted", "office"]
+    keywords: ["boardroom meeting", "suggestion", "distracted", "office"],
   },
 ];
 

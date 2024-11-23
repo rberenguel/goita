@@ -17,7 +17,6 @@ svg {
   border: 1px solid black; /* To help see it when opening as webpage */
 }
 .text-editor-wrapper {
-  /* Add a wrapper div */
   font-family: "Monoid";
   font-size: 18px;
   position: absolute;

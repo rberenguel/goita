@@ -40,6 +40,7 @@ class Text {
 
     textEditor.classList.add("text-editor");
     textEditor.style.color = this.color(1);
+    textEditor.style.textShadow = `color-mix(in srgb, ${this.color(1)} 70%, rgba(100, 100, 100, 0.7) 30%) 0.05em 0.05em`;
     textEditor.contentEditable = true;
     textEditorWrapper.appendChild(textEditor);
 

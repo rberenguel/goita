@@ -251,6 +251,8 @@ const setupAllTheThings = (testImage) => () => {
     if (kind === "memes") {
       const filterText = document.getElementById("filter-text");
       const filteredMemes = document.getElementById("filtered-memes");
+      event.stopPropagation();
+      event.preventDefault();
       if (event.key === "Backspace") {
         searchText = searchText.slice(0, -1);
         filterMemes(searchText);
