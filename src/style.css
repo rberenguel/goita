@@ -37,11 +37,21 @@ svg {
   font-family: "Inter";
 }
 .reforma {
-  font-family: "Reforma";
+  font-family: "Reforma1969";
 }
 
 .roboto {
   font-family: "Roboto";
+}
+
+.typewriter {
+  font-family: "Special Elite";
+}
+
+.ransom {
+  font-family: "BlackCasper";
+  text-shadow: none !important;
+  letter-spacing: 0.1em !important;
 }
 
 .text-editor-wrapper.selected {

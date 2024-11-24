@@ -2,7 +2,14 @@ import { SCALE_FACTOR, toTop } from "./common.js";
 
 export { Text };
 
-const FONT_CLASSES = ["monoid", "reforma", "inter", "roboto"];
+const FONT_CLASSES = [
+  "monoid",
+  "reforma",
+  "inter",
+  "roboto",
+  "typewriter",
+  "ransom",
+];
 const FONT_FACTORS = [1, 1.5, 1.5, 1.5]; // Kinda hacky, but gets the job done
 class Text {
   constructor(x, y, color, container, text) {
@@ -130,6 +137,11 @@ class Text {
       const fontClass = FONT_CLASSES[i];
       if (i === this._font) {
         this.element.classList.add(fontClass);
+        if (fontClass != "ransom") {
+          this._textEditor.style.textShadow = `color-mix(in srgb, ${this.color(1)} 70%, rgba(100, 100, 100, 0.7) 30%) 0.05em 0.05em`;
+        } else {
+          this._textEditor.style.textShadow = `none`;
+        }
       } else {
         this.element.classList.remove(fontClass);
       }
