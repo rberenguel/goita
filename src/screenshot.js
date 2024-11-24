@@ -221,12 +221,10 @@ const setupAllTheThings = (testImage, basepath) => () => {
 
   document.addEventListener("paste", (event) => {
     const clipboardData = event.clipboardData || window.clipboardData;
-    console.info(clipboardData);
     if (clipboardData) {
       const pastedText = clipboardData.getData("text");
-      console.info(pastedText);
       if (pastedText && kind === "memes") {
-        // Can I take this out? It's the same as the callback-meme
+        // Can I take this out? It's the same as the callback-meme, and repeated below
         const container = document.getElementById("meme-container");
 
         if (container) {
@@ -247,6 +245,36 @@ const setupAllTheThings = (testImage, basepath) => () => {
         window._elements[pastedMeme.id] = pastedMeme;
         selected = pastedMeme;
         displayMemes = false;
+      }
+      const pastedImage = clipboardData.files[0];
+      if (pastedImage && pastedImage.type.startsWith("image")) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const base64Image = e.target.result;
+
+          const container = document.getElementById("meme-container");
+
+          if (container) {
+            container.remove();
+          }
+          let x = 0,
+            y = 0;
+          if (lastClick) {
+            x = lastClick.offsetX;
+            y = lastClick.offsetY;
+          }
+          const pastedMeme = new Image(x, y, base64Image, svg);
+          kind = null;
+          searchText = "";
+          filterText.style.display = "none";
+          filteredMemes.style.display = "none";
+          setBadge("empty");
+          window._elements[pastedMeme.id] = pastedMeme;
+          selected = pastedMeme;
+          displayMemes = false;
+        };
+
+        reader.readAsDataURL(pastedImage);
       }
     }
   });
