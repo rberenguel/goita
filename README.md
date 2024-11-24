@@ -15,11 +15,11 @@ It can also be used in a standalone way by visiting https://www.mostlymaths.net/
 
 All images and text are processed locally, no data is sent anywhere.
 
-## Demo video
+## Demo video for version 2.0
 
-Click the image to open the video (youtube). If you don't want to do that, you can find the video in `media/goita-demo-v09.mov`.
+Click the image to open the video (youtube).
 
-[![](https://raw.githubusercontent.com/rberenguel/goita/refs/heads/gh-pages/media/goita-demo-v09.jpeg)](https://youtu.be/FFXH2IKZ_Vw&mode=theatre)
+[![](https://raw.githubusercontent.com/rberenguel/goita/refs/heads/gh-pages/media/goita-demo-v09.jpeg)](https://youtu.be/Q2RcpPYaHbs&mode=theatre)
 
 ## Why? Aren't there a million like this?
 

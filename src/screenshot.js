@@ -221,9 +221,10 @@ const setupAllTheThings = (testImage) => () => {
 
   document.addEventListener("paste", (event) => {
     const clipboardData = event.clipboardData || window.clipboardData;
-
+    console.info(clipboardData);
     if (clipboardData) {
       const pastedText = clipboardData.getData("text");
+      console.info(pastedText);
       if (pastedText && kind === "memes") {
         // Can I take this out? It's the same as the callback-meme
         const container = document.getElementById("meme-container");
