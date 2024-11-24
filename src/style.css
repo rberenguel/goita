@@ -54,6 +54,11 @@ svg {
   letter-spacing: 0.1em !important;
 }
 
+.bitmap {
+  font-family: "Chicago Kare";
+  text-shadow: none !important;
+}
+
 .text-editor-wrapper.selected {
   border: 0.5em solid rgba(100, 100, 100, 0.3);
 }

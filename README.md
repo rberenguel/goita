@@ -115,3 +115,6 @@ As for contributing, this is one of my personal projects, and like many others I
   - [Reforma 1969](https://pampatype.com/reforma) (or from [FontSquirrel](https://www.fontsquirrel.com/fonts/reforma) to see the license)
   - [Inter](https://rsms.me/inter/)
   - [Monoid](https://larsenwork.com/monoid/)
+  - [Special Elite](https://fonts.google.com/specimen/Special+Elite)
+  - [BlackCasper](https://www.fontsquirrel.com/fonts/BlackCasper?q%5Bterm%5D=ransom&q%5Bsearch_check%5D=Y)
+  - [Chicago Kare](https://chicagokare.xyz/)

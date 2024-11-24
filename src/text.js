@@ -9,6 +9,7 @@ const FONT_CLASSES = [
   "roboto",
   "typewriter",
   "ransom",
+  "bitmap",
 ];
 const FONT_FACTORS = [1, 1.5, 1.5, 1.5]; // Kinda hacky, but gets the job done
 class Text {
@@ -137,10 +138,12 @@ class Text {
       const fontClass = FONT_CLASSES[i];
       if (i === this._font) {
         this.element.classList.add(fontClass);
-        if (fontClass != "ransom") {
-          this._textEditor.style.textShadow = `color-mix(in srgb, ${this.color(1)} 70%, rgba(100, 100, 100, 0.7) 30%) 0.05em 0.05em`;
-        } else {
+        if (fontClass === "ransom") {
           this._textEditor.style.textShadow = `none`;
+        } else if (fontClass === "bitmap") {
+          this._textEditor.style.textShadow = `color-mix(in srgb, ${this.color(1)} 70%, rgba(100, 100, 100, 0.1) 30%) 0.05em 0.05em`;
+        } else {
+          this._textEditor.style.textShadow = `color-mix(in srgb, ${this.color(1)} 70%, rgba(150, 150, 150, 0.7) 30%) 0.05em 0.05em`;
         }
       } else {
         this.element.classList.remove(fontClass);
