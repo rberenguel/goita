@@ -463,7 +463,10 @@ function filterMemes(text, settings = {}) {
     p.textContent = meme.title;
     p.style.cursor = "pointer";
     p.dataset.file = meme.file;
-    p.addEventListener("click", settings.callback("../memes/" + meme.file));
+    p.addEventListener(
+      "click",
+      settings.callback(settings.basepath + "memes/" + meme.file),
+    );
     filteredMemesElement.appendChild(p);
     filteredMemesElement.style.display = "block";
   });
@@ -485,7 +488,7 @@ function displayMemes(memes, settings) {
     memeDiv.style.overflow = "hidden"; // Hide any content that overflows
     memeDiv.style.position = "relative";
     const img = document.createElement("img");
-    img.src = "../memes/" + meme.file;
+    img.src = settings.basepath + "memes/" + meme.file;
     img.alt = meme.title;
     img.style.width = "100%";
     img.style.height = "100%";
@@ -496,10 +499,7 @@ function displayMemes(memes, settings) {
     memeDiv.classList.add("meme-img");
     memeDiv.style.width = "12em"; // Set a fixed width
     memeDiv.style.height = "12em"; // Set the same height for a square
-    memeDiv.addEventListener(
-      "click",
-      settings.callback("../memes/" + meme.file),
-    );
+    memeDiv.addEventListener("click", settings.callback("memes/" + meme.file));
     newContainer.appendChild(memeDiv);
   });
 

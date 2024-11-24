@@ -85,7 +85,7 @@ const sourceLinkDiv = () => document.getElementById("sourceLink");
 const filterText = document.getElementById("filter-text");
 const filteredMemes = document.getElementById("filtered-memes");
 
-const setupAllTheThings = (testImage) => () => {
+const setupAllTheThings = (testImage, basepath) => () => {
   try {
     chrome.storage.local.set({ linkback: true });
     chrome.storage.local.get(["screenshot", "url"], screenshotHandler);
@@ -254,7 +254,6 @@ const setupAllTheThings = (testImage) => () => {
   document.addEventListener(
     "wheel",
     (event) => {
-      console.log(event);
       if (event.ctrlKey) {
         event.stopPropagation();
         event.preventDefault();
@@ -305,7 +304,7 @@ const setupAllTheThings = (testImage) => () => {
           x = currentClick.offsetX;
           y = currentClick.offsetY;
         }
-        const pastedMeme = new Image(x, y, "../memes/" + memePath, svg);
+        const pastedMeme = new Image(x, y, basepath + memePath, svg);
         kind = null;
         searchText = "";
         filterText.style.display = "none";
@@ -325,12 +324,14 @@ const setupAllTheThings = (testImage) => () => {
         filterMemes(searchText, {
           display: displayMemes,
           callback: memeCallback,
+          basepath: basepath,
         });
       } else if (event.key === "Tab") {
         displayMemes = !displayMemes;
         filterMemes(searchText, {
           display: displayMemes,
           callback: memeCallback,
+          basepath: basepath,
         });
       } else if (event.key === "Escape") {
         kind = null;
@@ -357,10 +358,10 @@ const setupAllTheThings = (testImage) => () => {
         }
       } else if (event.key.length === 1) {
         searchText += event.key;
-        console.log(searchText);
         filterMemes(searchText, {
           display: displayMemes,
           callback: memeCallback,
+          basepath: basepath,
         });
       }
       return;
@@ -370,7 +371,6 @@ const setupAllTheThings = (testImage) => () => {
     if (event.key === "." && event.ctrlKey && kind === "text") {
       // Size control needs to happen before we stop propagation
       // and short-circuit
-      console.log("enlarge");
       selected.fontSizeUp();
       return;
     }
