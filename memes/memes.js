@@ -22,6 +22,11 @@ const memes = [
     keywords: ["terminator homer", "rod tod", "simpsons"],
   },
   {
+    title: "Homer Hiding in the Bush",
+    file: "homer-bush.jpg",
+    keywords: ["Homer Hiding in the Bush", "simpsons"],
+  },
+  {
     title: "Ralph: Go Banana",
     file: "go-banana.jpg",
     keywords: ["go banana", "ralph", "simpsons"],

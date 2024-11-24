@@ -375,13 +375,12 @@ const setupAllTheThings = (testImage, basepath) => () => {
         return;
       } else if (event.key === "Enter") {
         const container = document.getElementById("meme-container");
-
         if (container) {
           container.remove();
         }
         const meme = filteredMemes.querySelector("p");
         if (meme) {
-          memeCallback(meme.dataset["file"])();
+          memeCallback(basepath + "memes/" + meme.dataset["file"])();
           return;
         }
       } else if (event.key.length === 1) {
