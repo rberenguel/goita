@@ -79,7 +79,7 @@ svg {
 #help {
   padding: 1em;
   position: absolute;
-  transform: translate(50%, 20vh);
+  transform: translate(50%, 10vh);
   font-family: "Roboto Mono";
   font-size: 16px;
   width: 50%;

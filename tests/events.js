@@ -1,4 +1,4 @@
-export { kev, mev, del, esc };
+export { kev, mev, pev, del, esc, enter, tab };
 
 const kev = (letter) =>
   new KeyboardEvent("keydown", {
@@ -14,6 +14,14 @@ const esc = new KeyboardEvent("keydown", {
   key: "Escape",
 });
 
+const enter = new KeyboardEvent("keydown", {
+  key: "Enter",
+});
+
+const tab = new KeyboardEvent("keydown", {
+  key: "Tab",
+});
+
 const mev = (_clientX, _clientY, kind) => {
   let clientX = _clientX;
   let clientY = _clientY;
@@ -25,4 +33,10 @@ const mev = (_clientX, _clientY, kind) => {
     cancelable: true,
   });
   return ev;
+};
+
+const pev = (text) => {
+  const event = new Event("paste", { bubbles: true, cancelable: true });
+  event.clipboardData = { getData: (type) => (type === "text" ? text : "") };
+  return event;
 };

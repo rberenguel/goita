@@ -11,6 +11,7 @@ import { ClipPath } from "./clip.js";
 import { shortcuts } from "./shortcuts.js";
 
 import { filterMemes } from "../memes/memes.js";
+import { createHelpDiv } from "./help.js";
 
 window._elements = {}; // I leak this into window to make testing easier.
 
@@ -80,6 +81,9 @@ const loadImage = (flipped) => (data) => {
 };
 
 const sourceLinkDiv = () => document.getElementById("sourceLink");
+
+const filterText = document.getElementById("filter-text");
+const filteredMemes = document.getElementById("filtered-memes");
 
 const setupAllTheThings = (testImage) => () => {
   try {
@@ -164,6 +168,9 @@ const setupAllTheThings = (testImage) => () => {
   }
 
   const svg = document.getElementById("svgOverlay");
+
+  createHelpDiv();
+
   const help = document.getElementById("help");
 
   // the useful globals;
@@ -203,10 +210,45 @@ const setupAllTheThings = (testImage) => () => {
       chrome.action.setTitle({ title: title });
       chrome.action.setBadgeText({ text: title });
     } catch (err) {
+      if (chrome.action === undefined) {
+        // This is expected while on browser mode
+        return;
+      }
       console.info(err);
     }
   }
   setBadge("empty");
+
+  document.addEventListener("paste", (event) => {
+    const clipboardData = event.clipboardData || window.clipboardData;
+
+    if (clipboardData) {
+      const pastedText = clipboardData.getData("text");
+      if (pastedText && kind === "memes") {
+        // Can I take this out? It's the same as the callback-meme
+        const container = document.getElementById("meme-container");
+
+        if (container) {
+          container.remove();
+        }
+        let x = 0,
+          y = 0;
+        if (lastClick) {
+          x = lastClick.offsetX;
+          y = lastClick.offsetY;
+        }
+        const pastedMeme = new Image(x, y, pastedText, svg);
+        kind = null;
+        searchText = "";
+        filterText.style.display = "none";
+        filteredMemes.style.display = "none";
+        setBadge("empty");
+        window._elements[pastedMeme.id] = pastedMeme;
+        selected = pastedMeme;
+        displayMemes = false;
+      }
+    }
+  });
 
   document.addEventListener(
     "wheel",
@@ -238,7 +280,6 @@ const setupAllTheThings = (testImage) => () => {
       }
     }
     if (event.key === "Escape" && selected) {
-      console.info(selected);
       if (selected.is) {
         selected.deselect();
       } else {
@@ -250,10 +291,6 @@ const setupAllTheThings = (testImage) => () => {
       return;
     }
     if (kind === "memes") {
-      const filterText = document.getElementById("filter-text");
-      const filteredMemes = document.getElementById("filtered-memes");
-      event.stopPropagation();
-      event.preventDefault();
       const currentClick = lastClick;
       const memeCallback = (memePath) => () => {
         const container = document.getElementById("meme-container");
@@ -277,16 +314,18 @@ const setupAllTheThings = (testImage) => () => {
         selected = pastedMeme;
         displayMemes = false;
       };
-      if (event.metaKey) {
+      if (event.metaKey || event.ctrlKey) {
         return;
       }
+      event.stopPropagation();
+      event.preventDefault();
       if (event.key === "Backspace") {
         searchText = searchText.slice(0, -1);
         filterMemes(searchText, {
           display: displayMemes,
           callback: memeCallback,
         });
-      } else if (event.key === "Control" || event.key === "Tab") {
+      } else if (event.key === "Tab") {
         displayMemes = !displayMemes;
         filterMemes(searchText, {
           display: displayMemes,
@@ -298,8 +337,8 @@ const setupAllTheThings = (testImage) => () => {
         filterText.style.display = "none";
         filteredMemes.style.display = "none";
         setBadge("empty");
+        displayMemes = false;
         const container = document.getElementById("meme-container");
-
         if (container) {
           container.remove();
         }
@@ -352,7 +391,7 @@ const setupAllTheThings = (testImage) => () => {
       return;
     }
     if (selected && selected.is && selected.is("text") && selected.focused()) {
-      console.info("Texting, stop any propagation");
+      // Texting, stop any propagation
       event.stopPropagation();
       return;
     }
@@ -453,13 +492,11 @@ const setupAllTheThings = (testImage) => () => {
       }
     }
     if (wants(event) == "rect") {
-      console.info("Drawing rect");
       isDrawing = true;
       kind = "rect";
       setBadge("rect");
     }
     if (wants(event) == "ellipse") {
-      console.info("Drawing ellipse");
       isDrawing = true;
       kind = "ellipse";
       setBadge("ellipse");
@@ -487,7 +524,6 @@ const setupAllTheThings = (testImage) => () => {
     }
     if (wants(event) == "highlight") {
       setBadge("highlight");
-      console.info("drawing highlight");
       isDrawing = true;
       kind = "highlight";
     }
@@ -495,7 +531,6 @@ const setupAllTheThings = (testImage) => () => {
       setBadge("arrow");
       isDrawing = true;
       kind = "arrow";
-      console.info("Drawing arrow");
     }
     if (wants(event) == "paste") {
       kind = "paste";
@@ -508,14 +543,12 @@ const setupAllTheThings = (testImage) => () => {
       isDrawing = true;
       kind = "text";
       event.stopPropagation();
-      console.info("Creating text");
     }
     if (wants(event) == "memes") {
       setBadge("memes");
       isDrawing = true;
       kind = "memes";
       event.stopPropagation();
-      console.info("Starting text filtering");
       return;
     }
     if (isDrawing) {
@@ -773,7 +806,7 @@ const setupAllTheThings = (testImage) => () => {
       _kind = "text";
     } else {
       if (!_kind) {
-        console.info("Clicked on something useless unexpectedly");
+        console.info("Clicked on something useless (unexpectedly?)");
         if (selected) {
           selected.deselect();
         }
@@ -830,12 +863,10 @@ const setupAllTheThings = (testImage) => () => {
 
   document.addEventListener("mouseup", () => {
     if (isDrawing) {
-      console.info("Stopped drawing");
       setBadge("empty");
       isDrawing = false;
       document.body.style.cursor = "";
       if (selected.is) {
-        console.info("Deselecting on mouseup while drawing");
         if (!selected.is("text")) {
           selected.deselect();
           selected = null;

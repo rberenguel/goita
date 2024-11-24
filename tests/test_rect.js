@@ -25,7 +25,6 @@ describe("Rect", function () {
     setTimeout(done, 100);
   });
   it("should be selected by clicking on it", function (done) {
-    console.log("clicking on it");
     _rect.dispatchEvent(mev(710, 500, "mousedown"));
     _rect.dispatchEvent(mev(710, 500, "mouseup"));
     const rect = window._elements[_rect.getAttribute("id")];
@@ -35,7 +34,6 @@ describe("Rect", function () {
   });
 
   it("should be draggable once selected", function (done) {
-    console.log("clicking on it");
     _rect.dispatchEvent(mev(710, 500, "mousedown"));
     _rect.dispatchEvent(mev(1010, 600, "mousemove"));
     _rect.dispatchEvent(mev(0, 0, "mouseup"));

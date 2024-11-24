@@ -14,12 +14,12 @@ const memes = [
   {
     title: "Confused Travolta",
     file: "confused-travolta.jpg",
-    keywords: ["confused", "travolta", "pulp fiction"],
+    keywords: ["confused travolta", "pulp fiction"],
   },
   {
     title: "Homer Terminator",
     file: "homer-terminator.jpg",
-    keywords: ["terminator", "homer", "rod tod", "simpsons"],
+    keywords: ["terminator homer", "rod tod", "simpsons"],
   },
   {
     title: "Ralph: Go Banana",
@@ -29,7 +29,12 @@ const memes = [
   {
     title: "Ralph (Chuckles): I'm in Danger",
     file: "ralph-danger.jpg",
-    keywords: ["ralph chuckle in danger", "ralph", "simpsons"],
+    keywords: [
+      "Ralph (Chuckles): I'm in Danger",
+      "ralph chuckle in danger",
+      "ralph",
+      "simpsons",
+    ],
   },
   {
     title: "Skinner Out of Touch",
@@ -311,6 +316,12 @@ const memes = [
   },
 
   {
+    title: "Picard Facepalm",
+    file: "facepalm.jpg",
+    keywords: ["Picard facepalm", "facepalm", "jean-luc picard", "star trek"],
+  },
+
+  {
     title: "Khaaan!",
     file: "khaaan.jpg",
     keywords: [
@@ -416,8 +427,15 @@ const memes = [
   },
 ];
 
-const filterTextElement = document.getElementById("filter-text");
-const filteredMemesElement = document.getElementById("filtered-memes");
+const filterTextElement =
+  document.getElementById("filter-text") ||
+  document.body.appendChild(document.createElement("div"));
+filterTextElement.id = "filter-text";
+
+const filteredMemesElement =
+  document.getElementById("filtered-memes") ||
+  document.body.appendChild(document.createElement("div"));
+filteredMemesElement.id = "filtered-memes";
 
 function filterMemes(text, settings = {}) {
   const lowerCaseText = text.toLowerCase();
@@ -452,7 +470,6 @@ function filterMemes(text, settings = {}) {
 }
 
 function displayMemes(memes, settings) {
-  console.log(memes);
   const container = document.getElementById("meme-container");
 
   if (container) {

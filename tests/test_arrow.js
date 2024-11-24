@@ -24,7 +24,6 @@ describe("Arrow", function () {
     setTimeout(done, 100);
   });
   it("should be selected by clicking on it", function (done) {
-    console.log("clicking on it");
     _arr.dispatchEvent(mev(710, 500, "mousedown"));
     _arr.dispatchEvent(mev(710, 500, "mouseup"));
     const arr = window._elements[_arr.getAttribute("id")];
@@ -34,7 +33,6 @@ describe("Arrow", function () {
   });
 
   it("should be draggable once selected", function (done) {
-    console.log("clicking on it");
     _arr.dispatchEvent(mev(710, 500, "mousedown"));
     _arr.dispatchEvent(mev(1010, 600, "mousemove"));
     _arr.dispatchEvent(mev(0, 0, "mouseup"));
@@ -81,7 +79,6 @@ describe("Arrow", function () {
     setTimeout(done, 100);
   });
   it("should cancel by pressing ESC", function (done) {
-    console.info("Cancel on ESC");
     const a = kev("a");
     document.dispatchEvent(a);
     document.dispatchEvent(mev(700, 500, "mousedown"));

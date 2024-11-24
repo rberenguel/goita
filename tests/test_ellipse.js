@@ -8,9 +8,9 @@ document.dispatchEvent(mev(700, 500, "mousedown"));
 describe("Ellipse", function () {
   this.slow(1000);
   let _ellipse;
-  it("should be created by pressing W", function (done) {
-    const r = kev("w");
-    document.dispatchEvent(r);
+  it("should be created by pressing P", function (done) {
+    const p = kev("p");
+    document.dispatchEvent(p);
     document.dispatchEvent(mev(700, 500, "mousedown"));
     document.dispatchEvent(mev(800, 600, "mousemove"));
     document.dispatchEvent(mev(0, 0, "mouseup"));

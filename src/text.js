@@ -122,7 +122,6 @@ class Text {
   }
 
   fontName() {
-    console.log(FONT_CLASSES[this._font]);
     return FONT_CLASSES[this._font];
   }
 
@@ -139,8 +138,6 @@ class Text {
   }
 
   fontSizeUp() {
-    console.log("sizing up");
-    console.log(this._fontSize);
     this._fontSize = this._fontSize + 2;
     this.fontSize();
   }
@@ -151,9 +148,7 @@ class Text {
   }
 
   fontSize() {
-    console.log(this._font, this._fontSize);
     const sizing = `${FONT_FACTORS[this._font] * this._fontSize}px`;
-    console.log(sizing);
     this.element.style.fontSize = `${sizing}`;
   }
 
@@ -205,7 +200,6 @@ class Text {
       this.isSelected = false;
       this.dragOff();
       const te = this.element.querySelector(".text-editor");
-      console.info(`Deselected text: '${te.textContent}'`);
       this.element.classList.remove("selected");
       if (te.textContent.trim().length === 0) {
         console.info("Purging empty text");

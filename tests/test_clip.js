@@ -25,7 +25,6 @@ describe("Clip", function () {
     setTimeout(done, 100);
   });
   it("should be selected by clicking on it", function (done) {
-    console.log("clicking on it");
     _clip.dispatchEvent(mev(710, 500, "mousedown"));
     _clip.dispatchEvent(mev(710, 500, "mouseup"));
     const clip = window._elements[_clip.getAttribute("id")];
@@ -36,7 +35,6 @@ describe("Clip", function () {
   // These dragging tests are just fixing the current behaviour,
   // I haven't checked if these numbers are really what they should be in practice
   it("should be draggable once selected", function (done) {
-    console.log("clicking on it");
     _clip.dispatchEvent(mev(710, 500, "mousedown"));
     _clip.dispatchEvent(mev(1010, 600, "mousemove"));
     _clip.dispatchEvent(mev(0, 0, "mouseup"));
@@ -51,7 +49,6 @@ describe("Clip", function () {
     setTimeout(done, 100);
   });
   it("should be shift-draggable once selected", function (done) {
-    console.log("clicking on it");
     _clip.dispatchEvent(mev(710, 500, "mousedown"));
     const mv = new MouseEvent("mousemove", {
       clientX: 100,
@@ -114,7 +111,6 @@ describe("Clip", function () {
     const texts = all.filter(
       (a) => a.getAttribute("_kind") && a.getAttribute("_kind") === "text",
     );
-    console.log(texts);
     chai.expect(texts.length).to.eql(0);
     chai.expect(Object.keys(window._elements).length).to.eql(0);
     setTimeout(done, 100);

@@ -65,3 +65,7 @@ svg {
 #sourceLink > a {
   color: #d5a900ff;
 }
+
+#help {
+  display: none;
+}

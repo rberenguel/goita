@@ -11,7 +11,9 @@
 
 An extension to take and annotate screenshots.
 
-It can also be used in a standalone way by visiting https://www.mostlymaths.net/goita/ To annotate an image you have in your clipboard, press `q`, otherwise you can paste pieces of images using `v` [NOTE: this is broken in Safari due to some clipboard permission issue]. Depending on the browser you may need to click "paste", or accept some clipboard access permissions. All images and text are processed locally, no data is sent anywhere.
+It can also be used in a standalone way by visiting https://www.mostlymaths.net/goita/ To annotate an image you have in your clipboard, press `q`, otherwise you can paste pieces of images using `v` [NOTE: this is broken in Safari due to some clipboard permission issue]. Depending on the browser you may need to click "paste", or accept some clipboard access permissions. Use `m` to have fun with memes.
+
+All images and text are processed locally, no data is sent anywhere.
 
 ## Demo video
 
@@ -31,43 +33,43 @@ Also, two features I have wanted for a while:
 
 2. In addition to an image, **it can export the screenshot as a `data:base64` encoded URL**, where the image is clickable (combines with point 1). I can't embed an example in a README (github seems to throw such a long URL away) but you can find it in [`media/data-url-example`](https://raw.githubusercontent.com/rberenguel/goita/refs/heads/gh-pages/media/data-url-example), copy that blob of text in the URL of your browser (tested in Chrome and Safari) and you should see a screenshot as the one above, clickable.
 
-## Annotation features
+## Features and functionality
 
-For all these, creation and deletion (click the element and press backspace) should be possible.
+Taken from the extension's help modal. These are the default shortcut keys.
 
-- [x] Choose color: press `c` and then one of:
-  - `r`: Red (this is the default).
-  - `y`: Yellow.
-  - `b`: Blue.
-  - `g`: Green.
-  - `w`: White.
-  - `x`: Redact (will use solid black in everything).
-  - `c`: To cancel the "choose color" mode.
-- [x] Rectangles: press `r` and drag to create.
-- [x] Arrows: press `a` and drag to create from source to destination.
-- [x] Text: press `t` and click to place.
-  - [x] `Ctrl-.` and `Ctrl-,` increase and decrease the font for text, respectively.
-  - [x] `Ctrl + scrollwheel` over a text block increase / decrease the size of the bounding box.
-  - [x] `Ctrl-/` Cycle through fonts (Monoid, Reforma1969, Inter, Roboto)
-- [x] Highlight: press `s` and drag to create. Use color `x` to redact. (why `s` and not `h`? Because all other shape/tool letters are on the left hand)
-- [x] Redact: Use highlighting with color "redact".
-- [x] Clip-on-drag the initial screenshot: press `k` at any time.
-  - The resulting clipped block is draggable after clicking on it to select it.
-  - Shift-dragging drags the clip.
-  - Select the clipped image and press `k` again to restore the viewframe.
-- [x] Paste images from the clipboard: press `v` and then click somewhere.
-  - The pasted image is draggable.
-  - The pasted image can be deleted by pressing backspace (like any other element after selection).
-  - `Ctrl + scrollwheel` over a pasted image resizes it.
-- [x] Paste HTML text from the clipboard: press `v` and then click somewhere.
-  - The pasted text is draggable.
-  - The pasted text is contenteditable.
-  - The pasted image can be deleted by pressing backspace (like any other element after selection).
-  - [x] Handle `text/plain`
-- [x] Circles/ellipses: press `p` and drag, like a rectangle
-- [x] The current mode and color (when drawing) is showed in the extension badge. Make sure to pin it.
-- [x] Control font size for text (it is fixed and the same for all blocks)
-- [x] Most shortcuts are quickly customizable in a single file (`shortcuts.js`)
+- `a`: draw an arrow
+- `r`: draw a rectangle
+- `p`: draw an ellipse
+- `s`: highlight an area
+- `t`: write text
+  - `ctrl .`: Make text larger (for this text block)
+  - `ctrl ,`: Make text smaller (for this text block)
+  - `ctrl /`: Cycle through fonts (Monoid, Reforma, Inter, Roboto)
+  - `ctrl + scrollwheel`: Resize the text bounding box
+  - `ctrl + c`: Center the text
+- `v`: paste images or text from the clipboard
+  - `ctrl + scrollwheel`: Resize the pasted image while selected
+- `k`: clip the screenshot
+  - `drag`: dragging moves the clipped image
+  - `shift+drag`: dragging moves the clipping rectangle
+- `q`: swap the screenshot for whatever image there is on the clipboard (or go back to the screenshot)
+- `c`: choose color for the next operations
+  - `r`: red (default)
+  - `y`: yellow
+  - `b`: blue
+  - `g`: green
+  - `o`: orange
+  - `w`: white
+  - `x`: black (and highlight then redacts)
+- `m`: enter meme selection, it will be placed on the last click and behave as a pasted image
+  - `type`: to dynamically search through the list of memes
+  - `tab`: to display meme thumbnails
+  - `enter`: to select the topmost meme
+  - `click`: on the image or name to select it
+  - `paste`: an external meme URL (should be valid) to use that instead
+  - `esc`: to dismiss
+- `z`: switch between the screenshot and a white canvas (better for tweaking memes or diagrams)
+- `backspace`: delete anything selected
 
 ## Installation
 
