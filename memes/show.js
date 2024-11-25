@@ -25,10 +25,14 @@ document.addEventListener("click", (ev) => {
     enlarged.appendChild(img);
     enlarged.appendChild(closer);
     enlarged.appendChild(title);
+    enlarged.classList.remove("back");
     enlarged.classList.remove("hidden");
     container.classList.add("blur");
   } else {
     enlarged.classList.add("hidden");
     container.classList.remove("blur");
+    setTimeout(() => {
+      enlarged.classList.add("back");
+    }, 700); // This ideally matches the transition in index.html for opacity
   }
 });
