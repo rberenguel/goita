@@ -210,8 +210,8 @@ const setupAllTheThings = (testImage, basepath) => () => {
       chrome.action.setTitle({ title: title });
       chrome.action.setBadgeText({ text: title });
     } catch (err) {
-      if (chrome.action === undefined) {
-        // This is expected while on browser mode
+      if (typeof chrome === "undefined" || chrome.action === undefined) {
+        // This is expected while on other browsers, or just browser mode
         return;
       }
       console.info(err);
@@ -246,7 +246,7 @@ const setupAllTheThings = (testImage, basepath) => () => {
         selected = pastedMeme;
         displayMemes = false;
       }
-      const pastedImage = clipboardData.files[0];
+      const pastedImage = clipboardData.files && clipboardData.files[0];
       if (pastedImage && pastedImage.type.startsWith("image")) {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -641,6 +641,9 @@ const setupAllTheThings = (testImage, basepath) => () => {
 
                     window._elements[pastedImage.id] = pastedImage;
                     selected = pastedImage;
+                    kind = null; // This fixes Safari. For some reason it works on Chrome, but it shouldn't
+                    event.stopPropagation();
+                    event.preventDefault();
                   };
                   reader.readAsDataURL(blob);
                 });
@@ -660,7 +663,7 @@ const setupAllTheThings = (testImage, basepath) => () => {
                     );
                     window._elements[text.id] = text;
                     selected = text;
-                    kind = "text"; // This prevents typing on the block from being interpreted as commands
+                    kind = null; // This fixes Safari. For some reason it works on Chrome, but it shouldn't
                     event.stopPropagation();
                     event.preventDefault();
                   });
