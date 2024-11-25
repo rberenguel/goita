@@ -430,6 +430,16 @@ const memes = [
       "webcomicname",
     ],
   },
+  {
+    title: "XKCD: compiling",
+    file: "xkcd-compiling.jpg",
+    keywords: ["xkcd compiling", "developer", "xkcd"],
+  },
+  {
+    title: "XKCD: dependency",
+    file: "xkcd-dependency.jpg",
+    keywords: ["xkcd dependency", "developer", "xkcd"],
+  },
 ];
 
 const filterTextElement =
