@@ -7,6 +7,14 @@ displayMemes(memes, { basepath: "../", callback: cb });
 const enlarged = document.getElementById("enlarged");
 const container = document.getElementById("meme-container");
 
+const hide = () => {
+  enlarged.classList.add("hidden");
+  container.classList.remove("blur");
+  setTimeout(() => {
+    enlarged.classList.add("back");
+  }, 350); // This ideally matches the transition in index.html for opacity… but it's better if it's faster. Trust your past self.
+};
+
 document.addEventListener("click", (ev) => {
   if (
     ev.target.nodeName === "IMG" &&
@@ -25,14 +33,20 @@ document.addEventListener("click", (ev) => {
     enlarged.appendChild(img);
     enlarged.appendChild(closer);
     enlarged.appendChild(title);
+    const imgbb = img.getBoundingClientRect();
+    title.style.width = imgbb.width + "px";
     enlarged.classList.remove("back");
     enlarged.classList.remove("hidden");
     container.classList.add("blur");
   } else {
-    enlarged.classList.add("hidden");
-    container.classList.remove("blur");
-    setTimeout(() => {
-      enlarged.classList.add("back");
-    }, 700); // This ideally matches the transition in index.html for opacity
+    hide();
+  }
+});
+
+document.addEventListener("keydown", (ev) => {
+  ev.preventDefault();
+  ev.stopPropagation();
+  if (!enlarged.classList.contains("hidden")) {
+    hide();
   }
 });
