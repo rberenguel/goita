@@ -174,8 +174,13 @@ svg {
   backdrop-filter: blur(5px);
 }
 
-#meme-container > div {
+.meme-img {
   padding: 0em;
+  width: 12em;
+  height: 12em;
+  border: 1px solid #ccc;
+  overflow: hidden;
+  position: relative;
 }
 
 .meme-img[data-title]:hover::after {

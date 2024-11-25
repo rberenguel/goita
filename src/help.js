@@ -1,10 +1,9 @@
 export { createHelpDiv };
 
-function createHelpDiv() {
+function createHelpDiv(settings = {}) {
   if (document.getElementById("help")) {
     return;
   }
-
   const helpDiv = document.createElement("div");
   helpDiv.id = "help";
   helpDiv.classList.add("hide");
@@ -57,6 +56,7 @@ function createHelpDiv() {
       <p><code> enter</code> to select the topmost meme</p>
       <p><code> click</code> on the image or name to select it</p>
       <p><code> paste</code> an external meme URL (should be valid) to use that instead</p>
+      <p><code>      </code> see all memes <a href="${settings.basepath}/memes/index.html">here</a></p>
       <p><code> esc</code> to dismiss</p>
       <p><code>{empty}</code>: switch between the screenshot and a white canvas (better for tweaking memes or diagrams)</p>
       <p><code>backspace</code>: delete anything selected</p>

@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Goita: all the memes</title>
+    <link href="../fonts/fonts.css" rel="stylesheet" />
+    <link href="../src/style.css" rel="stylesheet" />
+    <style>
+      #meme-container {
+        top: 1rem;
+        display: grid;
+        width: calc(100% - 2rem);
+        margin-left: 1rem;
+        position: absolute;
+        z-index: 1000;
+        grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+        gap: 0em;
+        padding: 0;
+        background-color: white;
+        border-radius: 5px;
+        border: none;
+        backdrop-filter: blur(5px);
+      }
+
+      .blur {
+        filter: blur(1em);
+      }
+
+      .meme-img {
+        margin-bottom: 0.8rem;
+        padding: 0em;
+        width: 16rem;
+        height: 16rem;
+        border: none;
+        border-radius: 0.3rem;
+        border: 1px solid black;
+      }
+
+      .meme-img > img {
+        border: none;
+      }
+
+      #enlarged {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+        opacity: 1;
+        transition: opacity 0.5s ease-in-out;
+        padding: 0.5rem;
+        background: white;
+        border: 2px solid black;
+        border-radius: 0.5rem;
+      }
+
+      #enlarged > img {
+        max-height: 50vh;
+        border-radius: 0.3rem 0.3rem 0 0;
+      }
+
+      #enlarged.hidden {
+        opacity: 0;
+      }
+
+      .meme-title {
+        border-top: 2px solid #630;
+        font-size: 190%;
+      }
+
+      .close {
+        position: absolute;
+        right: 1.5em;
+        top: 1.5em;
+        cursor: pointer;
+        transition: transform 0.1s ease-in-out;
+        transform: translateX(0em);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="filtered-memes"></div>
+    <div id="enlarged" class="hidden"></div>
+    <script type="module" src="show.js"></script>
+  </body>
+</html>

@@ -11,7 +11,7 @@
 
 An extension to take and annotate screenshots.
 
-It can also be used in a standalone way by visiting https://www.mostlymaths.net/goita/ To annotate an image you have in your clipboard, press `q`, otherwise you can paste pieces of images using `v`. Depending on the browser you may need to click "paste", or accept some clipboard access permissions. Use `m` to have fun with memes.
+It can also be used in a standalone way by visiting https://www.mostlymaths.net/goita/ To annotate an image you have in your clipboard, press `q`, otherwise you can paste pieces of images using `v`. Depending on the browser you may need to click "paste", or accept some clipboard access permissions. Use `m` to have fun with memes. You can see all memes available [here](https://www.mostlymaths.net/goita/memes/) (it's also available from within the extension or the standalone help).
 
 All images and text are processed locally, no data is sent anywhere.
 

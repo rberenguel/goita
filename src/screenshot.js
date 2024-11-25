@@ -169,7 +169,7 @@ const setupAllTheThings = (testImage, basepath) => () => {
 
   const svg = document.getElementById("svgOverlay");
 
-  createHelpDiv();
+  createHelpDiv({ basepath: basepath });
 
   const help = document.getElementById("help");
 

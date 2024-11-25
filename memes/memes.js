@@ -1,4 +1,4 @@
-export { filterMemes, displayMemes };
+export { memes, filterMemes, displayMemes };
 
 const memes = [
   {
@@ -440,6 +440,11 @@ const memes = [
     file: "xkcd-dependency.jpg",
     keywords: ["xkcd dependency", "developer", "xkcd"],
   },
+  {
+    title: "I have no idea what I'm doing",
+    file: "no-idea.jpg",
+    keywords: ["I have no idea what I'm doing", "dog", "confused"],
+  },
 ];
 
 const filterTextElement =
@@ -499,21 +504,16 @@ function displayMemes(memes, settings) {
 
   memes.forEach((meme) => {
     const memeDiv = document.createElement("div");
-    memeDiv.style.border = "1px solid #ccc";
-    memeDiv.style.overflow = "hidden"; // Hide any content that overflows
-    memeDiv.style.position = "relative";
     const img = document.createElement("img");
     img.src = settings.basepath + "memes/" + meme.file;
     img.alt = meme.title;
     img.style.width = "100%";
     img.style.height = "100%";
     img.style.objectFit = "cover"; // This is key for square trimming
-
+    memeDiv.classList.add("meme-div");
     memeDiv.appendChild(img);
     memeDiv.dataset["title"] = meme.title;
     memeDiv.classList.add("meme-img");
-    memeDiv.style.width = "12em"; // Set a fixed width
-    memeDiv.style.height = "12em"; // Set the same height for a square
     memeDiv.addEventListener("click", settings.callback("memes/" + meme.file));
     newContainer.appendChild(memeDiv);
   });
