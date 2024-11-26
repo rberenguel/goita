@@ -1,0 +1,14 @@
+version: "3"
+
+tasks:
+  dump:
+    cmds:
+      - gotllo -exclude=white.js,mocha.js,chai.js,show.js,memes,testImage.js,tdw README.md src/*.js tests/*.js memes/*.js src/style.css tests/index.html -tree=./ > tdw.md
+  pbdump:
+    deps: [dump]
+    cmds:
+      - /bin/cat tdw.md | pbcopy
+  tdw:
+    deps: [dump]
+    cmds:
+      - open https://gemini.google.com

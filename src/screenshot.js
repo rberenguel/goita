@@ -245,6 +245,7 @@ const setupAllTheThings = (testImage, basepath) => () => {
         window._elements[pastedMeme.id] = pastedMeme;
         selected = pastedMeme;
         displayMemes = false;
+        isDrawing = false;
       }
       const pastedImage = clipboardData.files && clipboardData.files[0];
       if (pastedImage && pastedImage.type.startsWith("image")) {
@@ -272,6 +273,7 @@ const setupAllTheThings = (testImage, basepath) => () => {
           window._elements[pastedMeme.id] = pastedMeme;
           selected = pastedMeme;
           displayMemes = false;
+          isDrawing = false;
         };
 
         reader.readAsDataURL(pastedImage);
@@ -341,6 +343,7 @@ const setupAllTheThings = (testImage, basepath) => () => {
         window._elements[pastedMeme.id] = pastedMeme;
         selected = pastedMeme;
         displayMemes = false;
+        isDrawing = false;
       };
       if (event.metaKey || event.ctrlKey) {
         return;

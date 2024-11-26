@@ -1,0 +1,1 @@
+{"rule":"REPEATED_VERBS","sentence":"^\\QNote: I only could get it to fully work once I enabled enable in Incognito.\\E$"}

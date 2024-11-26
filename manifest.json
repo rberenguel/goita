@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Goita",
   "description": "Take a screenshot, add arrows and sh*t as you wish. With blackjack, and memes",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "permissions": [
     "tabs",
     "activeTab",
@@ -19,15 +19,6 @@
   "background": {
     "service_worker": "src/background.js",
     "type": "module"
-  },
-  "commands": {
-    "take-screenshot": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+P",
-        "mac": "MacCtrl+Command+P"
-      },
-      "description": "Take a screenshot of the current page"
-    }
   },
   "icons": {
     "512": "media/icon512.png",
