@@ -507,7 +507,7 @@ const memes = [
   },
   {
     title: "Pager",
-    file: "pager.jpg",
+    file: "pager.png",
     keywords: ["Pager", "oncall"],
   },
 ];
