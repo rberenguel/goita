@@ -505,6 +505,11 @@ const memes = [
     file: "running-balloon.jpg",
     keywords: ["Running away balloon", "obligations"],
   },
+  {
+    title: "Pager",
+    file: "pager.jpg",
+    keywords: ["Pager", "oncall"],
+  },
 ];
 
 const filterTextElement =
