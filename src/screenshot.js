@@ -402,12 +402,14 @@ const setupAllTheThings = (testImage, basepath) => () => {
       // Size control needs to happen before we stop propagation
       // and short-circuit
       selected.fontSizeUp();
+      setBadge(selected.fontSize());
       return;
     }
     if (event.key === "," && event.ctrlKey && kind === "text") {
       // Size control needs to happen before we stop propagation
       // and short-circuit
       selected.fontSizeDown();
+      setBadge(selected.fontSize());
       return;
     }
     if (event.key === "c" && event.ctrlKey && kind === "text") {

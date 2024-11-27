@@ -11,7 +11,12 @@ const FONT_CLASSES = [
   "ransom",
   "bitmap",
 ];
-const FONT_FACTORS = [1, 1.5, 1.5, 1.5]; // Kinda hacky, but gets the job done
+const FONT_FACTORS = [1, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5]; // Kinda hacky, but gets the job done
+
+if (FONT_CLASSES.length != FONT_FACTORS.length) {
+  alert("Fix this");
+}
+
 class Text {
   constructor(x, y, color, container, text) {
     this.x = x;
@@ -114,6 +119,9 @@ class Text {
     this.scale();
   }
 
+  // TODO(me): Add a color method to all, so color can be changed on selected elements.
+  // Start with text because it is the most annoying
+
   scale() {
     const rect = this._textEditor.getBoundingClientRect();
     this._textEditor.style.width = this._scale * rect.width + "px";
@@ -165,6 +173,7 @@ class Text {
   fontSize() {
     const sizing = `${FONT_FACTORS[this._font] * this._fontSize}px`;
     this.element.style.fontSize = `${sizing}`;
+    return sizing;
   }
 
   center() {

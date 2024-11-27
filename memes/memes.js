@@ -450,6 +450,56 @@ const memes = [
     file: "djokovic.jpg",
     keywords: ["Djokovic screaming", "angry", "tennis", "ffs"],
   },
+  {
+    title: "Bike self-fail",
+    file: "bike-self-fail.jpg",
+    keywords: ["Bike self-fail", "stupid", "bike"],
+  },
+  {
+    title: "Anakin and Padme, right?",
+    file: "anakin-padme.jpg",
+    keywords: ["Anakin and Padme, right?", "disbelief", "confusion"],
+  },
+  {
+    title: "Trolley problem",
+    file: "trolley.jpg",
+    keywords: ["trolley problem", "choice", "death"],
+  },
+  {
+    title: "Gentleman frog",
+    file: "gentleman-frog.jpg",
+    keywords: ["Gentleman frog", "frog", "elegant"],
+  },
+  {
+    title: "What a week, Captain",
+    file: "what-a-week.jpg",
+    keywords: ["What a week, Captain", "Haddock", "Tintin", "Wednesday"],
+  },
+  {
+    title: "Won't somebody think of the children?",
+    file: "wont-somebody.jpg",
+    keywords: ["Won't somebody think of the children?", "Maude", "Simpsons"],
+  },
+  {
+    title: "Who killed Hannibal?",
+    file: "who-killed-hannibal.jpg",
+    keywords: ["Who killed Hannibal?", "Who did that"],
+  },
+  {
+    title: "Gru's plan",
+    file: "grus-plan.jpg",
+    keywords: ["Gru's plan", "confusion", "backfire"],
+  },
+  {
+    title: "Rickroll",
+    file: "rickroll.jpg",
+    keywords: ["Rickroll", "Astley", "Never gonna"],
+  },
+  {
+    title: "IT Crowd: have you tried restarting it?",
+    file: "it-crowd-restarting.jpg",
+    keywords: ["IT Crowd: have you tried restarting it?"],
+  },
 ];
 
 const filterTextElement =
