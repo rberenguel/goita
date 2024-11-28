@@ -3,14 +3,14 @@ import { colors, toTop } from "./common.js";
 export { Ellipse };
 
 class Ellipse {
-  constructor(cx, cy, colorName, svg) {
+  constructor(cx, cy, color, svg) {
     this.startX = cx; // Store initial cx
     this.startY = cy; // Store initial cy
     this.cx = cx;
     this.cy = cy;
     this.rx = 0; // Initially zero radius in x-direction
     this.ry = 0; // Initially zero radius in y-direction
-    this.colorName = colorName;
+    this.color = color;
     this.svg = svg;
     this.element = this.createEllipseElement();
     this.id = `ellipse-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
@@ -32,7 +32,7 @@ class Ellipse {
     ellipse.setAttribute("cy", this.cy);
     ellipse.setAttribute("rx", this.rx);
     ellipse.setAttribute("ry", this.ry);
-    ellipse.setAttribute("stroke", colors[this.colorName](1));
+    ellipse.setAttribute("stroke", this.color(1));
     ellipse.setAttribute("stroke-width", "4"); // The ellipse stroke looks chunkier than the rectangle
     ellipse.setAttribute("fill", "rgba(0, 0, 0, 0.0)");
 
@@ -57,6 +57,11 @@ class Ellipse {
     });
   }
 
+  setColor(color) {
+    this.color = color;
+    this.element.setAttribute("stroke", this.color(1));
+  }
+
   dragInit(clientX, clientY) {
     this.startOffsetX = clientX - this.cx;
     this.startOffsetY = clientY - this.cy;
@@ -74,6 +79,8 @@ class Ellipse {
   drag(event) {
     const newCx = event.clientX - this.startOffsetX;
     const newCy = event.clientY - this.startOffsetY;
+    this.cx = newCx;
+    this.cy = newCy;
     requestAnimationFrame(() => {
       this.element.setAttribute("cx", newCx);
       this.element.setAttribute("cy", newCy);

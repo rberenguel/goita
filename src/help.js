@@ -48,8 +48,9 @@ function createHelpDiv(settings = {}) {
       <p><code> b</code> blue</p>
       <p><code> g</code> green</p>
       <p><code> o</code> orange</p>
-      <p><code> w</code> white</p>
+      <p><code> w</code> white (and highlight then redacts)</p>
       <p><code> x</code> black (and highlight then redacts)</p>
+      <p><code> s</code> switches opacity for highlight (redact <-> semi-transparent))</p>
       <p><code>{memes}</code>: enter meme selection, it will be placed on the last click</p>
       <p><code> type</code> to dynamically search through the list of memes</p>
       <p><code> tab</code> to display meme thumbnails</p>

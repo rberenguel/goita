@@ -8,7 +8,7 @@ class Arrow {
     this.y1 = y1;
     this.x2 = x1; // Initially, the arrowhead is at the same point
     this.y2 = y1;
-    this.colorName = colorName;
+    this.colorName = colorName; // Arrows _do_ need colornames
     this.svg = svg;
     this.element = this.createArrowElement();
     this.isSelected = false;
@@ -52,6 +52,15 @@ class Arrow {
     return Math.sqrt(dx * dx + dy * dy);
   }
 
+  setColor(colorName) {
+    this.colorName = colorName;
+    this.element.setAttribute("stroke", colors[this.colorName](1));
+    this.element.setAttribute(
+      "marker-end",
+      `url(#arrowhead-${this.colorName})`,
+    );
+  }
+
   dragInit(clientX, clientY) {
     const startX = parseFloat(this.element.getAttribute("x1"));
     const startY = parseFloat(this.element.getAttribute("y1"));
@@ -78,8 +87,6 @@ class Arrow {
     const newStartY = event.clientY - this.startOffsetY;
     const newEndX = event.clientX - this.endOffsetX;
     const newEndY = event.clientY - this.endOffsetY;
-    let tofx = this.endOffsetX;
-    let sofx = this.startOffsetX;
     // Update the arrow's position
     requestAnimationFrame(() => {
       this.element.setAttribute("x1", newStartX);

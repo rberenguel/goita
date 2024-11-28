@@ -468,11 +468,12 @@ const setupAllTheThings = (testImage, basepath) => () => {
       } else {
         kind = "colorSettings";
       }
-      if (selected && selected.is) {
-        selected.deselect();
-      }
+      // Can't deselect if we want to change colors
+      //if (selected && selected.is) {
+      //  selected.deselect();
+      //}
       setBadge("color");
-      selected = null;
+      //selected = null;
       return;
     }
     if (kind === "colorSettings") {
@@ -504,15 +505,23 @@ const setupAllTheThings = (testImage, basepath) => () => {
         colorName = "white";
         color = colors["white"];
       }
-      /*
-        TODO(me) Next feature
-        if(event.key === "s"){
-          colors["solid"]();
-          console.info("Setting alpha to solid")
-          return;
-        }*/
+
+      if (event.key === "s") {
+        colors["solid"]()();
+        color = colors[colorName];
+        console.info("Setting alpha to solid");
+      }
+      if (selected && selected.setColor) {
+        if (selected.is("arrow")) {
+          // Arrow heads are identified by colour, as an id
+          selected.setColor(colorName);
+        } else {
+          selected.setColor(color);
+        }
+      }
       kind = null;
       setBadge("empty");
+      return;
     }
     if (event.key === "h") {
       for (const [key, entity] of Object.entries(shortcuts)) {
@@ -681,14 +690,14 @@ const setupAllTheThings = (testImage, basepath) => () => {
       let startX = event.offsetX;
       let startY = event.offsetY;
       if (kind === "rect" || kind === "highlight") {
-        const rect = new Rect(startX, startY, colorName, svg, kind);
+        const rect = new Rect(startX, startY, color, svg, kind);
         window._elements[rect.id] = rect;
         selected = rect;
         event.preventDefault();
         return;
       }
       if (kind === "ellipse") {
-        const ellipse = new Ellipse(startX, startY, colorName, svg);
+        const ellipse = new Ellipse(startX, startY, color, svg);
         window._elements[ellipse.id] = ellipse;
         selected = ellipse;
         event.preventDefault();

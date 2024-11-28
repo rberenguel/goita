@@ -3,14 +3,14 @@ import { colors, toTop } from "./common.js";
 export { Rect };
 
 class Rect {
-  constructor(x, y, colorName, svg, kind) {
+  constructor(x, y, color, svg, kind) {
     this.startX = x; // Store initial x
     this.startY = y; // Store initial y
     this.x = x;
     this.y = y;
     this.width = 0; // Initially zero width
     this.height = 0; // Initially zero height
-    this.colorName = colorName;
+    this.color = color;
     this.svg = svg;
     this.kind = kind; // 'rect' or 'highlight'
     this.element = this.createRectElement();
@@ -31,16 +31,22 @@ class Rect {
     rect.setAttribute("width", this.width);
     rect.setAttribute("height", this.height);
     if (this.kind === "rect") {
-      rect.setAttribute("stroke", colors[this.colorName](1));
+      rect.setAttribute("stroke", this.color(1));
       rect.setAttribute("stroke-width", "5");
       rect.setAttribute("fill", "rgba(0, 0, 0, 0.0)");
       rect.setAttribute("rx", "5");
     } else if (this.kind === "highlight") {
       rect.setAttribute("stroke-width", "0");
-      rect.setAttribute("fill", colors[this.colorName](0.2));
+      rect.setAttribute("fill", this.color(0.2));
+      rect.setAttribute("rx", "2");
     }
     this.svg.appendChild(rect);
     return rect;
+  }
+
+  setColor(color) {
+    this.color = color;
+    this.element.setAttribute("stroke", this.color(1));
   }
 
   updateShape(event) {
@@ -83,6 +89,8 @@ class Rect {
   drag(event) {
     const newX = event.clientX - this.startOffsetX;
     const newY = event.clientY - this.startOffsetY;
+    this.x = newX;
+    this.y = newY;
     requestAnimationFrame(() => {
       this.element.setAttribute("x", newX);
       this.element.setAttribute("y", newY);

@@ -510,6 +510,25 @@ const memes = [
     file: "pager.png",
     keywords: ["Pager", "oncall"],
   },
+  {
+    title: "I've seen things you people wouldn't believe",
+    file: "ive-seen-things.jpg",
+    keywords: [
+      "I've seen things you people wouldn't believe",
+      "orion",
+      "blade runner",
+    ],
+  },
+  {
+    title: "Your lack of faith in the force…",
+    file: "lack-of-faith.jpg",
+    keywords: ["Your lack of faith in the force", "Star Wars", "Vader"],
+  },
+  {
+    title: "What's in the box?",
+    file: "what-in-the-box.jpg",
+    keywords: ["What's in the box?", "Gom Jabbar", "Dune"],
+  },
 ];
 
 const filterTextElement =

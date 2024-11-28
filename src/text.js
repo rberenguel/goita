@@ -122,6 +122,12 @@ class Text {
   // TODO(me): Add a color method to all, so color can be changed on selected elements.
   // Start with text because it is the most annoying
 
+  setColor(color) {
+    this.color = color;
+    this._textEditor.style.color = this.color(1);
+    this._textEditor.style.textShadow = `color-mix(in srgb, ${this.color(1)} 70%, rgba(100, 100, 100, 0.7) 30%) 0.05em 0.05em`;
+  }
+
   scale() {
     const rect = this._textEditor.getBoundingClientRect();
     this._textEditor.style.width = this._scale * rect.width + "px";

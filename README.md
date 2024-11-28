@@ -105,8 +105,9 @@ Taken from the extension's help modal. These are the default shortcut keys.
   - `b`: blue
   - `g`: green
   - `o`: orange
-  - `w`: white
+  - `w`: white. This makes the highlight tool a redaction tool.
   - `x`: black. This makes the highlight tool a redaction tool.
+  - `s`: this switches opacity for the highlight tool from redaction to semi-transparent
 - `m`: enter meme selection, it will be placed on the last click and behave as a pasted image
   - `type`: to dynamically search through the list of memes
   - `tab`: to display meme thumbnails
