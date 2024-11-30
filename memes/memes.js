@@ -598,7 +598,10 @@ function displayMemes(memes, settings) {
     memeDiv.appendChild(img);
     memeDiv.dataset["title"] = meme.title;
     memeDiv.classList.add("meme-img");
-    memeDiv.addEventListener("click", settings.callback("memes/" + meme.file));
+    memeDiv.addEventListener(
+      "click",
+      settings.callback(settings.basepath + "memes/" + meme.file),
+    );
     newContainer.appendChild(memeDiv);
   });
 

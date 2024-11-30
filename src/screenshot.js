@@ -269,6 +269,10 @@ const setupAllTheThings = (testImage, basepath) => () => {
   interact(document.body)
     //.pointerEvents({ ignoreFrom: ".body-container" })
     .on("hold", (ev) => {
+      if (ev.button != 0) {
+        // Want to avoid right-click-menu counting as hold, very annoying
+        return;
+      }
       const bbox = radialMenu.getBoundingClientRect();
       const x = ev.clientX;
       const y = ev.clientY;
@@ -401,7 +405,7 @@ const setupAllTheThings = (testImage, basepath) => () => {
           x = currentClick.offsetX;
           y = currentClick.offsetY;
         }
-        const pastedMeme = new Image(x, y, basepath + memePath, svg);
+        const pastedMeme = new Image(x, y, memePath, svg);
         kind = null;
         searchText = "";
         filterText.style.display = "none";
