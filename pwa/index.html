@@ -7,6 +7,17 @@
     <link rel="manifest" href="manifest.json" />
   </head>
   <body>
+    <div id="radial-menu">
+      <div class="radial">
+        <a href="">text</a>
+        <a href="">arrow</a>
+        <a href="">rect</a>
+        <a href="">ellipse</a>
+        <a href="">memes</a>
+      </div>
+      <input type="text" id="hidden-input" />
+      <a href="" class="menu-button"></a>
+    </div>
     <div id="screenshotContainer">
       <div id="sourceLink"></div>
       <svg id="svgOverlay"></svg>
@@ -14,6 +25,7 @@
     </div>
     <div id="filter-text"></div>
     <div id="filtered-memes"></div>
+    <script src="../libs/interact.min.js"></script>
     <script type="module" src="../src/main.js"></script>
   </body>
 </html>

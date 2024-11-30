@@ -8,7 +8,7 @@ import { Ellipse } from "./ellipse.js";
 import { Text } from "./text.js";
 import { Image } from "./image.js";
 import { ClipPath } from "./clip.js";
-import { shortcuts } from "./shortcuts.js";
+import { reverseShortcuts, shortcuts } from "./shortcuts.js";
 
 import { filterMemes } from "../memes/memes.js";
 import { createHelpDiv } from "./help.js";
@@ -177,6 +177,7 @@ const setupAllTheThings = (testImage, basepath) => () => {
   let selected = null;
   let dragging = false;
   let isDrawing = false;
+  let fromMenu = false;
   let colorName = "red";
   let color = colors[colorName];
 
@@ -187,7 +188,7 @@ const setupAllTheThings = (testImage, basepath) => () => {
       rect: "▭",
       ellipse: "⬭",
       highlight: "░",
-      memes: "( ͡° ͜ʖ ͡°)",
+      memes: " ͡° ͜ʖ ͡°",
       text: "|",
       paste: "↧",
       color: "c?",
@@ -218,6 +219,99 @@ const setupAllTheThings = (testImage, basepath) => () => {
     }
   }
   setBadge("empty");
+
+  /** WIP */
+
+  const radialMenu = document.getElementById("radial-menu");
+  const hiddenInput = document.getElementById("hidden-input");
+
+  hiddenInput.addEventListener("focus", (e) => console.log("got focus"));
+  hiddenInput.addEventListener("blur", (e) => console.log("lost focus"));
+  //const menuItems = radialMenu.querySelectorAll("li");
+
+  const kev = (letter) =>
+    new KeyboardEvent("keydown", {
+      key: letter,
+      code: "Key" + letter.toUpperCase(),
+    });
+
+  const menuItems = document.querySelectorAll(".radial a");
+
+  for (var i = 0, l = menuItems.length; i < l; i++) {
+    const item = menuItems[i];
+    item.style.left =
+      (50 - 35 * Math.cos(-0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)).toFixed(
+        4,
+      ) + "%";
+    item.style.top =
+      (50 + 35 * Math.sin(-0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)).toFixed(
+        4,
+      ) + "%";
+    const transform = `rotate(${(i * 360) / menuItems.length}deg)`;
+    item.style.transform = transform;
+    item.addEventListener("mouseover", () => {
+      item.style.transform = `${transform} scale(1.2)`;
+    });
+
+    item.addEventListener("mouseout", () => {
+      item.style.transform = transform;
+    });
+
+    item.addEventListener("mouseup", (ev) => {
+      fromMenu = true;
+      document.dispatchEvent(
+        kev(reverseShortcuts[item.dataset["handler"].trim()]),
+      );
+    });
+  }
+
+  interact(document.body)
+    //.pointerEvents({ ignoreFrom: ".body-container" })
+    .on("hold", (ev) => {
+      const bbox = radialMenu.getBoundingClientRect();
+      const x = ev.clientX;
+      const y = ev.clientY;
+
+      // Position the radial menu
+      console.log(bbox);
+      radialMenu.style.left = x - bbox.width / 2 + "px";
+      radialMenu.style.top = y - bbox.height / 2 + "px";
+
+      if (radialMenu.classList.contains("show")) {
+        return;
+      }
+      radialMenu.classList.add("show");
+      document.querySelector(".radial").classList.add("open");
+    });
+
+  menuItems.forEach((item) => {
+    item.addEventListener("mouseup", function (event) {
+      // Get the command from the menu item (e.g., using data attributes or text content)
+      const command = item.textContent.trim(); // Or use item.dataset.command if you have data attributes
+
+      // Perform the action based on the command
+      switch (command) {
+        case "Text":
+          // Code to execute the "Text" command
+          console.log("Text command executed");
+          break;
+        case "Arrow":
+          // Code to execute the "Arrow" command
+          console.log("Arrow command executed");
+          break;
+        case "Rect":
+          // Code to execute the "Rect" command
+          console.log("Rect command executed");
+          break;
+      }
+
+      // Hide the radial menu after a command is executed
+      radialMenu.classList.remove("show");
+      document.querySelector(".radial").classList.remove("open");
+    });
+  });
+
+  /** End WIP */
 
   document.addEventListener("paste", (event) => {
     const clipboardData = event.clipboardData || window.clipboardData;
@@ -590,6 +684,7 @@ const setupAllTheThings = (testImage, basepath) => () => {
       setBadge("memes");
       isDrawing = true;
       kind = "memes";
+      hiddenInput.focus();
       event.stopPropagation();
       return;
     }
@@ -628,6 +723,12 @@ const setupAllTheThings = (testImage, basepath) => () => {
     if (event.button != 0) {
       return;
     }
+
+    if (radialMenu.classList.contains("show")) {
+      radialMenu.classList.remove("show");
+      document.querySelector(".circle").classList.remove("open");
+    }
+
     lastClick = event;
     if (selected && selected.is) {
       selected.deselect();
@@ -907,11 +1008,15 @@ const setupAllTheThings = (testImage, basepath) => () => {
   });
 
   document.addEventListener("mouseup", () => {
+    if (fromMenu) {
+      fromMenu = false;
+      return;
+    }
     if (isDrawing) {
       setBadge("empty");
       isDrawing = false;
       document.body.style.cursor = "";
-      if (selected.is) {
+      if (selected && selected.is) {
         if (!selected.is("text")) {
           selected.deselect();
           selected = null;

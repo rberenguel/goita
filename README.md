@@ -175,6 +175,7 @@ As for contributing, this is one of my personal projects, and like many others I
 
 - Icons: [Google Gemini](https://gemini.google.com)
 - Tests use the [chai.js](https://www.chaijs.com/)/[mocha.js](https://mochajs.org/) framework.
+- [Interact.js](https://interactjs.io/) to get a hidden menu and potential mobile usage
 - Added the following open source fonts:
   - [Roboto Mono](https://fonts.google.com/specimen/Roboto+Mono)
   - [Reforma 1969](https://www.fontsquirrel.com/fonts/reforma)
@@ -183,6 +184,8 @@ As for contributing, this is one of my personal projects, and like many others I
   - [Special Elite](https://fonts.google.com/specimen/Special+Elite)
   - [BlackCasper](https://www.fontsquirrel.com/fonts/BlackCasper)
   - [Chicago Kare](https://chicagokare.xyz/)
+- Added the [free solid FontAwesome fonts](https://fontawesome.com/)
+- Circular menu based on [this CodePen](https://codepen.io/csmckenna/pen/PqgYwR) by [Chris McKenna](https://codepen.io/csmckenna)
 
 <!-- README ends here -->
 <!-- Provided code starts here -->

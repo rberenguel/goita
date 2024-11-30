@@ -3,9 +3,22 @@
   <head>
     <title>Goita tu</title>
     <link href="../fonts/fonts.css" rel="stylesheet" />
+    <link href="../fonts/fontawesome/solid.css" rel="stylesheet" />
+    <link href="../fonts/fontawesome/fontawesome.css" rel="stylesheet" />
     <link href="style.css" rel="stylesheet" />
   </head>
   <body>
+    <div id="radial-menu">
+      <div class="radial">
+        <a href="" class="fa-solid fa-arrow-up" data-handler="arrow"></a>
+        <a href="" class="fa-solid fa-square" data-handler="rect"></a>
+        <a href="" class="fa-solid fa-highlighter" data-handler="highlight"></a>
+        <a href="" class="fa-solid fa-i-cursor" data-handler="text"></a>
+        <a href="" class="fa-solid fa-circle" data-handler="ellipse"></a>
+        <a href="" class="fa-solid fa-icons" data-handler="memes"></a>
+      </div>
+      <input type="text" id="hidden-input" />
+    </div>
     <div id="screenshotContainer">
       <div id="sourceLink"></div>
       <svg id="svgOverlay"></svg>
@@ -13,6 +26,7 @@
     </div>
     <div id="filter-text"></div>
     <div id="filtered-memes"></div>
+    <script src="../libs/interact.min.js"></script>
     <script type="module" src="main.js"></script>
   </body>
 </html>

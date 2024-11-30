@@ -1,4 +1,4 @@
-export { shortcuts };
+export { shortcuts, reverseShortcuts };
 
 const shortcuts = {
   r: "rect",
@@ -13,3 +13,10 @@ const shortcuts = {
   c: "color",
   z: "empty",
 };
+
+const reverseShortcuts = {};
+
+for (const key in shortcuts) {
+  const value = shortcuts[key];
+  reverseShortcuts[value] = key;
+}

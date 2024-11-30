@@ -197,3 +197,64 @@ svg {
   z-index: 100000;
   white-space: pre;
 }
+
+/* WIP */
+
+#radial-menu {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+  position: absolute;
+  z-index: 1000;
+  backdrop-filter: blur(5px) sepia(0.5);
+  border-radius: 50%;
+  opacity: 0;
+  user-select: none;
+  color: #c60 !important;
+}
+
+#radial-menu.show {
+  opacity: 1;
+}
+
+.radial {
+  width: 200px;
+  height: 200px;
+  opacity: 0;
+
+  -webkit-transform: scale(0);
+  -moz-transform: scale(0);
+  transform: scale(0);
+
+  -webkit-transition: all 0.5s ease-out;
+  -moz-transition: all 0.5s ease-out;
+  transition: all 0.4s ease-out;
+  z-index: 1000;
+}
+
+.open.radial {
+  opacity: 1;
+  -webkit-transform: scale(1);
+  -moz-transform: scale(1);
+  transform: scale(1);
+}
+
+.radial a {
+  text-decoration: none;
+  color: #c60;
+  display: block;
+  height: 40px;
+  width: 40px;
+  line-height: 40px;
+  margin-left: -20px;
+  margin-top: -20px;
+  position: absolute;
+  text-align: center;
+  font-size: 2rem;
+}
+
+#hidden-input {
+  position: absolute;
+  top: -10000px;
+  left: -10000px;
+}
