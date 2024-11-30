@@ -47,6 +47,41 @@ class Image {
       pastedImage.setAttribute("x", this.x);
       pastedImage.setAttribute("y", this.y);
     });
+
+    const here = this;
+
+    interact(pastedImage).draggable({
+      inertia: true,
+      autoscroll: true,
+      listeners: {
+        leave: (ev) => {},
+        start(ev) {
+          here.dragInit();
+        },
+        end(ev) {
+          here.dragOff();
+        },
+        move(ev) {
+          here.drag(ev);
+        },
+      },
+    });
+
+    interact(pastedImage).gesturable({
+      listeners: {
+        move(ev) {
+          if (options.noGestures) {
+            return;
+          }
+          // Scale > 1 is opening up
+          // Scale < 1 is closing
+          // TODO(check and work on this)
+          here._scale = ev.scale;
+          here.scale();
+        },
+      },
+    });
+
     return pastedImage;
   }
 
