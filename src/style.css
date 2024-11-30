@@ -3,6 +3,7 @@ body {
   margin: 0;
   padding: 0;
   user-select: none; /* This should only be required in mobile use */
+  -webkit-user-select: none;
 }
 #screenshotContainer {
   position: relative;
