@@ -2,6 +2,7 @@ body {
   border: 0;
   margin: 0;
   padding: 0;
+  user-select: none; /* This should only be required in mobile use */
 }
 #screenshotContainer {
   position: relative;
