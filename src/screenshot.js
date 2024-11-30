@@ -227,7 +227,6 @@ const setupAllTheThings = (testImage, basepath) => () => {
 
   hiddenInput.addEventListener("focus", (e) => console.log("got focus"));
   hiddenInput.addEventListener("blur", (e) => console.log("lost focus"));
-  //const menuItems = radialMenu.querySelectorAll("li");
 
   const kev = (letter) =>
     new KeyboardEvent("keydown", {
@@ -235,7 +234,7 @@ const setupAllTheThings = (testImage, basepath) => () => {
       code: "Key" + letter.toUpperCase(),
     });
 
-  const menuItems = document.querySelectorAll(".radial a");
+  const menuItems = document.querySelectorAll(".radial i");
 
   for (var i = 0, l = menuItems.length; i < l; i++) {
     const item = menuItems[i];
@@ -259,6 +258,8 @@ const setupAllTheThings = (testImage, basepath) => () => {
 
     item.addEventListener("mouseup", (ev) => {
       fromMenu = true;
+      radialMenu.classList.remove("show");
+      document.querySelector(".radial").classList.remove("open");
       document.dispatchEvent(
         kev(reverseShortcuts[item.dataset["handler"].trim()]),
       );
@@ -273,7 +274,6 @@ const setupAllTheThings = (testImage, basepath) => () => {
       const y = ev.clientY;
 
       // Position the radial menu
-      console.log(bbox);
       radialMenu.style.left = x - bbox.width / 2 + "px";
       radialMenu.style.top = y - bbox.height / 2 + "px";
 
@@ -283,33 +283,6 @@ const setupAllTheThings = (testImage, basepath) => () => {
       radialMenu.classList.add("show");
       document.querySelector(".radial").classList.add("open");
     });
-
-  menuItems.forEach((item) => {
-    item.addEventListener("mouseup", function (event) {
-      // Get the command from the menu item (e.g., using data attributes or text content)
-      const command = item.textContent.trim(); // Or use item.dataset.command if you have data attributes
-
-      // Perform the action based on the command
-      switch (command) {
-        case "Text":
-          // Code to execute the "Text" command
-          console.log("Text command executed");
-          break;
-        case "Arrow":
-          // Code to execute the "Arrow" command
-          console.log("Arrow command executed");
-          break;
-        case "Rect":
-          // Code to execute the "Rect" command
-          console.log("Rect command executed");
-          break;
-      }
-
-      // Hide the radial menu after a command is executed
-      radialMenu.classList.remove("show");
-      document.querySelector(".radial").classList.remove("open");
-    });
-  });
 
   /** End WIP */
 
@@ -726,7 +699,7 @@ const setupAllTheThings = (testImage, basepath) => () => {
 
     if (radialMenu.classList.contains("show")) {
       radialMenu.classList.remove("show");
-      document.querySelector(".circle").classList.remove("open");
+      document.querySelector(".radial").classList.remove("open");
     }
 
     lastClick = event;

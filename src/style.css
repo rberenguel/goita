@@ -207,11 +207,11 @@ svg {
   margin: 0 auto;
   position: absolute;
   z-index: 1000;
-  backdrop-filter: blur(5px) sepia(0.5);
+  backdrop-filter: invert(0.2) blur(8px);
   border-radius: 50%;
+  border: 1px solid #ccc;
   opacity: 0;
   user-select: none;
-  color: #c60 !important;
 }
 
 #radial-menu.show {
@@ -240,10 +240,10 @@ svg {
   transform: scale(1);
 }
 
-.radial a {
+.radial i {
   text-decoration: none;
-  color: #c60;
   display: block;
+  color: black;
   height: 40px;
   width: 40px;
   line-height: 40px;
