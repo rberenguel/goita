@@ -73,11 +73,11 @@ class Image {
           // Scale > 1 is opening up
           // Scale < 1 is closing
           // TODO(check and work on this)
-          const ratio = here._scale/ev.scale
-          if(ratio <=1){
-            here.scaleUp()
+          const ratio = here._scale / ev.scale;
+          if (ratio <= 1) {
+            here.scaleUp();
           } else {
-            here.scaleDown()
+            here.scaleDown();
           }
         },
       },

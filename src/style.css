@@ -257,6 +257,7 @@ svg {
   position: absolute;
   text-align: center;
   font-size: 2rem;
+  font-style: normal !important;
 }
 
 #hidden-input {

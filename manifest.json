@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Goita",
   "description": "Take a screenshot, add arrows and sh*t as you wish. With blackjack, and memes",
-  "version": "2.4.2",
+  "version": "2.5.2",
   "permissions": [
     "tabs",
     "activeTab",

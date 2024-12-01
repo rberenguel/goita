@@ -8,6 +8,17 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <div id="radial-menu">
+      <div class="radial">
+        <i href="" class="fa-solid fa-arrow-up" data-handler="arrow"></i>
+        <i href="" class="fa-solid fa-square" data-handler="rect"></i>
+        <i href="" class="fa-solid fa-highlighter" data-handler="highlight"></i>
+        <i href="" class="fa-solid fa-i-cursor" data-handler="text"></i>
+        <i href="" class="fa-solid fa-circle" data-handler="ellipse"></i>
+        <i href="" class="fa-solid fa-icons" data-handler="memes"></i>
+      </div>
+      <input type="text" id="hidden-input" />
+    </div>
     <div id="screenshotContainer" style="">
       <div id="sourceLink"></div>
       <svg id="svgOverlay"></svg>
@@ -19,6 +30,7 @@
     <script type="module">
       mocha.setup("bdd");
     </script>
+    <script src="../libs/interact.min.js"></script>
     <script type="module" src="main.js"></script>
     <script type="module" src="test_clip.js"></script>
   </body>

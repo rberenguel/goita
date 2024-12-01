@@ -234,45 +234,110 @@ const setupAllTheThings = (testImage, basepath) => () => {
       code: "Key" + letter.toUpperCase(),
     });
 
-  const menuItems = document.querySelectorAll(".radial i");
+  const mainMenu = () => {
+    const radial = radialMenu.querySelector(".radial");
+    radial.innerHTML = "";
+    const buttons = [
+      { icon: "fa-arrow-up", handler: "arrow" },
+      { icon: "fa-square", handler: "rect" },
+      { icon: "fa-highlighter", handler: "highlight" },
+      { icon: "fa-i-cursor", handler: "text" },
+      { icon: "fa-circle", handler: "ellipse" },
+      { icon: "fa-icons", handler: "memes" },
+    ];
+    for (let button of buttons) {
+      const iel = document.createElement("I");
+      iel.classList.add("fa-solid");
+      iel.classList.add(button.icon);
+      iel.dataset["handler"] = button.handler;
+      radial.appendChild(iel);
+    }
+  };
 
-  for (var i = 0, l = menuItems.length; i < l; i++) {
-    const item = menuItems[i];
-    item.style.left =
-      (50 - 35 * Math.cos(-0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)).toFixed(
-        4,
-      ) + "%";
-    item.style.top =
-      (50 + 35 * Math.sin(-0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)).toFixed(
-        4,
-      ) + "%";
-    const transform = `rotate(${(i * 360) / menuItems.length}deg)`;
-    item.style.transform = transform;
-    item.addEventListener("mouseover", () => {
-      item.style.transform = `${transform} scale(1.2)`;
-    });
+  const textMenu = (el) => {
+    const radial = radialMenu.querySelector(".radial");
+    radial.innerHTML = "";
+    console.log(el);
+    const buttons = el.menu();
+    for (let button of buttons) {
+      const iel = document.createElement("I");
+      if (button.text) {
+        iel.textContent = button.text;
+        iel.classList.add(button.class);
+      } else {
+        iel.classList.add("fa-solid");
+        iel.classList.add(button.icon);
+      }
+      if (typeof button.handler === "string") {
+        iel.dataset["handler"] = button.handler;
+      } else {
+        iel._handler = button.handler;
+      }
 
-    item.addEventListener("mouseout", () => {
+      radial.appendChild(iel);
+    }
+  };
+
+  const addMenuHandlers = () => {
+    const menuItems = document.querySelectorAll(".radial i");
+
+    for (var i = 0, l = menuItems.length; i < l; i++) {
+      const item = menuItems[i];
+      item.style.left =
+        (
+          50 -
+          35 * Math.cos(-0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)
+        ).toFixed(4) + "%";
+      item.style.top =
+        (
+          50 +
+          35 * Math.sin(-0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)
+        ).toFixed(4) + "%";
+      const transform = `rotate(${(i * 360) / menuItems.length}deg)`;
       item.style.transform = transform;
-    });
+      item.addEventListener("mouseover", () => {
+        item.style.transform = `${transform} scale(1.2)`;
+      });
 
-    item.addEventListener("mouseup", (ev) => {
-      fromMenu = true;
-      radialMenu.classList.remove("show");
-      document.querySelector(".radial").classList.remove("open");
-      document.dispatchEvent(
-        kev(reverseShortcuts[item.dataset["handler"].trim()]),
-      );
-    });
-  }
+      item.addEventListener("mouseout", () => {
+        item.style.transform = transform;
+      });
+
+      const eventHandler = (ev) => {
+        console.log("Menu handler");
+        fromMenu = true;
+        radialMenu.classList.remove("show");
+        document.querySelector(".radial").classList.remove("open");
+        // TODO: this only works for main menu
+        if (item.dataset["handler"]) {
+          document.dispatchEvent(
+            kev(reverseShortcuts[item.dataset["handler"].trim()]),
+          );
+        }
+        if (item._handler) {
+          item._handler();
+        }
+      };
+
+      item.addEventListener("mouseup", eventHandler);
+      item.addEventListener("touchend", eventHandler);
+    }
+  };
 
   interact(document.body)
     //.pointerEvents({ ignoreFrom: ".body-container" })
     .on("hold", (ev) => {
+      // if ev.target is .text-editor -> choose fonts and that
       if (ev.button != 0) {
         // Want to avoid right-click-menu counting as hold, very annoying
         return;
       }
+      if (ev.target.classList.contains("text-editor")) {
+        textMenu(selected);
+      } else {
+        mainMenu();
+      }
+      addMenuHandlers();
       const bbox = radialMenu.getBoundingClientRect();
       const x = ev.clientX;
       const y = ev.clientY;
@@ -700,12 +765,6 @@ const setupAllTheThings = (testImage, basepath) => () => {
     if (event.button != 0) {
       return;
     }
-
-    if (radialMenu.classList.contains("show")) {
-      radialMenu.classList.remove("show");
-      document.querySelector(".radial").classList.remove("open");
-    }
-
     lastClick = event;
     if (selected && selected.is) {
       selected.deselect();
@@ -929,14 +988,32 @@ const setupAllTheThings = (testImage, basepath) => () => {
       _kind = "text";
     } else {
       if (!_kind) {
+        // This here below sucks. The menu should have its own
+        // event handling system
+        if (
+          event.target &&
+          event.target.closest &&
+          event.target.closest(".radial")
+        ) {
+          console.log("Returning");
+          return;
+        }
         console.info("Clicked on something useless (unexpectedly?)");
         if (selected) {
           selected.deselect();
+        }
+        if (radialMenu.classList.contains("show")) {
+          radialMenu.classList.remove("show");
+          document.querySelector(".radial").classList.remove("open");
         }
         return;
       } else {
         selected = event.target;
       }
+    }
+    if (radialMenu.classList.contains("show")) {
+      radialMenu.classList.remove("show");
+      document.querySelector(".radial").classList.remove("open");
     }
     kind = _kind;
     dragging = true;
@@ -978,6 +1055,10 @@ const setupAllTheThings = (testImage, basepath) => () => {
       return;
     }
     if (selected && dragging && selected.is) {
+      if (selected.is("text")) {
+        // To prevent resizable from failing
+        return;
+      }
       event.stopPropagation();
       selected.drag(event);
       return;
@@ -985,6 +1066,8 @@ const setupAllTheThings = (testImage, basepath) => () => {
   });
 
   document.addEventListener("mouseup", () => {
+    console.log("big bad mouseup");
+    console.log(fromMenu);
     if (fromMenu) {
       fromMenu = false;
       return;

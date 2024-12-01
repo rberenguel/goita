@@ -53,7 +53,9 @@ class Text {
 
     textEditor.classList.add("text-editor");
     textEditor.style.color = this.color(1);
-    textEditor.style.textShadow = `color-mix(in srgb, ${this.color(1)} 70%, rgba(100, 100, 100, 0.7) 30%) 0.05em 0.05em`;
+    textEditor.style.textShadow = `color-mix(in srgb, ${this.color(
+      1,
+    )} 70%, rgba(100, 100, 100, 0.7) 30%) 0.05em 0.05em`;
     textEditor.contentEditable = true;
     textEditorWrapper.appendChild(textEditor);
 
@@ -100,6 +102,54 @@ class Text {
     });
 
     textEditor.focus();
+
+    const here = this;
+
+    interact(textEditorWrapper).draggable({
+      inertia: true,
+      autoscroll: true,
+      listeners: {
+        leave: (ev) => {},
+        start(ev) {
+          here.dragInit(ev.clientX, ev.clientY);
+        },
+        end(ev) {
+          here.dragOff();
+        },
+        move(ev) {
+          here.drag(ev);
+        },
+      },
+    });
+
+    interact(textEditorWrapper).gesturable({
+      listeners: {
+        move(ev) {
+          // Scale > 1 is opening up
+          // Scale < 1 is closing
+          // TODO(check and work on this)
+          const ratio = here._scale / ev.scale;
+          if (ratio <= 1) {
+            here.fontSizeUp();
+          } else {
+            here.fontSizeDown();
+          }
+        },
+      },
+    });
+
+    interact(textEditorWrapper).resizable({
+      edges: { top: false, left: false, bottom: false, right: true },
+      listeners: {
+        move(ev) {
+          here._textEditor.style.width = ev.rect.width + "px";
+          here._textEditorWrapper.style.width =
+            here._textEditor.offsetWidth + 20 + "px";
+          here._textEditorWrapper.style.height =
+            here._textEditor.offsetHeight + 20 + "px";
+        },
+      },
+    });
     return textEditorWrapper;
   }
 
@@ -119,13 +169,27 @@ class Text {
     this.scale();
   }
 
+  menu() {
+    return FONT_CLASSES.map((cl) => {
+      const text = cl.slice(0, 3);
+      const handler = () => this.fontByName(cl);
+      return {
+        text: text,
+        class: cl,
+        handler: handler,
+      };
+    });
+  }
+
   // TODO(me): Add a color method to all, so color can be changed on selected elements.
   // Start with text because it is the most annoying
 
   setColor(color) {
     this.color = color;
     this._textEditor.style.color = this.color(1);
-    this._textEditor.style.textShadow = `color-mix(in srgb, ${this.color(1)} 70%, rgba(100, 100, 100, 0.7) 30%) 0.05em 0.05em`;
+    this._textEditor.style.textShadow = `color-mix(in srgb, ${this.color(
+      1,
+    )} 70%, rgba(100, 100, 100, 0.7) 30%) 0.05em 0.05em`;
   }
 
   scale() {
@@ -147,6 +211,11 @@ class Text {
     return FONT_CLASSES[this._font];
   }
 
+  fontByName(name) {
+    this._font = FONT_CLASSES.indexOf(name);
+    this.setFont();
+  }
+
   setFont() {
     for (let i = 0; i < FONT_CLASSES.length; i++) {
       const fontClass = FONT_CLASSES[i];
@@ -155,9 +224,13 @@ class Text {
         if (fontClass === "ransom") {
           this._textEditor.style.textShadow = `none`;
         } else if (fontClass === "bitmap") {
-          this._textEditor.style.textShadow = `color-mix(in srgb, ${this.color(1)} 70%, rgba(100, 100, 100, 0.1) 30%) 0.05em 0.05em`;
+          this._textEditor.style.textShadow = `color-mix(in srgb, ${this.color(
+            1,
+          )} 70%, rgba(100, 100, 100, 0.1) 30%) 0.05em 0.05em`;
         } else {
-          this._textEditor.style.textShadow = `color-mix(in srgb, ${this.color(1)} 70%, rgba(150, 150, 150, 0.7) 30%) 0.05em 0.05em`;
+          this._textEditor.style.textShadow = `color-mix(in srgb, ${this.color(
+            1,
+          )} 70%, rgba(150, 150, 150, 0.7) 30%) 0.05em 0.05em`;
         }
       } else {
         this.element.classList.remove(fontClass);
