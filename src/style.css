@@ -209,17 +209,18 @@ svg {
   height: 200px;
   margin: 0 auto;
   position: absolute;
-  z-index: -1;
+  z-index: 1000;
   backdrop-filter: invert(0.2) blur(8px);
   border-radius: 50%;
   border: 1px solid #ccc;
   opacity: 0;
   user-select: none;
+  transform: scale(0);
 }
 
 #radial-menu.show {
   opacity: 1;
-  z-index: 1000;
+  transform: scale(1);
 }
 
 .radial {

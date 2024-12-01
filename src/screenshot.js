@@ -661,8 +661,8 @@ const setupAllTheThings = (testImage, basepath) => () => {
       setBadge("memes");
       isDrawing = true;
       kind = "memes";
-      hiddenInput.focus();
       event.stopPropagation();
+      hiddenInput.focus();
       return;
     }
     if (isDrawing) {
