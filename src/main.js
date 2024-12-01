@@ -5,5 +5,5 @@ const basepath = "../"; // This is working weirdly now, for some reason
 
 document.addEventListener(
   "DOMContentLoaded",
-  setupAllTheThings(white, basepath),
+  setupAllTheThings(white, basepath, window.location.pathname.includes("pwa/")),
 );

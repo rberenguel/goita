@@ -85,7 +85,7 @@ const sourceLinkDiv = () => document.getElementById("sourceLink");
 const filterText = document.getElementById("filter-text");
 const filteredMemes = document.getElementById("filtered-memes");
 
-const setupAllTheThings = (testImage, basepath) => () => {
+const setupAllTheThings = (testImage, basepath, hideUrl) => () => {
   try {
     chrome.storage.local.set({ linkback: true });
     chrome.storage.local.get(["screenshot", "url"], screenshotHandler);
@@ -107,6 +107,9 @@ const setupAllTheThings = (testImage, basepath) => () => {
     linkElement.textContent = result.url; // Set the link text
     linkElement.target = "_blank"; // Open link in a new tab
     sourceLinkDiv().appendChild(linkElement);
+    if(hideUrl){
+      sourceLinkDiv().classList.add("hide")
+    }
 
     // Set SVG viewport after image loads
     img.onload = function () {
