@@ -70,14 +70,15 @@ class Image {
     interact(pastedImage).gesturable({
       listeners: {
         move(ev) {
-          if (options.noGestures) {
-            return;
-          }
           // Scale > 1 is opening up
           // Scale < 1 is closing
           // TODO(check and work on this)
-          here._scale = ev.scale;
-          here.scale();
+          const ratio = here._scale/ev.scale
+          if(ratio <=1){
+            here.scaleUp()
+          } else {
+            here.scaleDown()
+          }
         },
       },
     });
