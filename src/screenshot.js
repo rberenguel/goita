@@ -107,8 +107,8 @@ const setupAllTheThings = (testImage, basepath, hideUrl) => () => {
     linkElement.textContent = result.url; // Set the link text
     linkElement.target = "_blank"; // Open link in a new tab
     sourceLinkDiv().appendChild(linkElement);
-    if(hideUrl){
-      sourceLinkDiv().classList.add("hide")
+    if (hideUrl) {
+      sourceLinkDiv().classList.add("hide");
     }
 
     // Set SVG viewport after image loads
@@ -908,10 +908,13 @@ const setupAllTheThings = (testImage, basepath, hideUrl) => () => {
       selected = event.target;
       if (selected.getAttribute("_kind") === "image") {
         // This is a pasted image
-        selected = window._elements[selected.getAttribute("id")];
-        selected.select();
-        selected.dragInit(event.clientX, event.clientY);
-        dragging = true;
+
+        if (event.shiftKey) {
+          selected = window._elements[selected.getAttribute("id")];
+          selected.select();
+          selected.dragInit(event.clientX, event.clientY);
+          dragging = true;
+        }
       } else {
         // This is the main screenshot image. Handling clipping paths is done differently.
         const imageObject = selected;

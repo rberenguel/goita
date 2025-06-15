@@ -56,13 +56,18 @@ class Image {
       listeners: {
         leave: (ev) => {},
         start(ev) {
-          here.dragInit();
+          console.log("start");
+          if (ev.shiftKey) {
+            here.dragInit();
+          }
         },
         end(ev) {
           here.dragOff();
         },
         move(ev) {
-          here.drag(ev);
+          if (ev.shiftKey) {
+            here.dragInit();
+          }
         },
       },
     });
